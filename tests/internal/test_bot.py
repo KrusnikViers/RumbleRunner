@@ -1,15 +1,13 @@
 from unittest.mock import MagicMock, patch
 
-import app.bot.config
 import app.internal.bot
-import app.internal.storage.connection
 from tests.base import BaseTestCase, MatcherAny
 
 
 class TestLaunch(BaseTestCase):
     @patch('app.internal.bot.Updater', new=MagicMock())
     @patch('app.internal.bot.DatabaseConnection', new=MagicMock())
-    @patch('app.bot.config.Config', new=MagicMock())
+    @patch('app.internal.bot.Config', new=MagicMock())
     def test_polling(self):
         bot_instance = app.internal.bot.Bot()
         bot_instance.run()
