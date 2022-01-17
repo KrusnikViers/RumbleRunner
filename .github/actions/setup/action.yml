@@ -20,6 +20,6 @@ runs:
       shell: bash
     - name: Install dependencies and tools
       run: |
-        pip install flake8 pytest
+        pip install flake8 pytest coverage
         pip install -r requirements.txt
       shell: bash

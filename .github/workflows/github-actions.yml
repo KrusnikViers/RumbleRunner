@@ -15,11 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: setup
+      - name: Setup
         uses: ./.github/actions/setup
         with:
           python-version: ${{ matrix.python-version }}
-      - name: lint
+      - name: Lint
         run: flake8 . --config=.github/.flake8 --exit-zero
 
   test:
@@ -31,9 +31,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: setup
+      - name: Setup
         uses: ./.github/actions/setup
         with:
           python-version: ${{ matrix.python-version }}
-      - name: test
-        run: python scripts/run_tests.py
+      - name: Test
+        run: |
+          coverage run scripts/run_tests.py
+          coverage xml
+      - name: Upload coverage
+        uses: codecov/codecov-action@v2
