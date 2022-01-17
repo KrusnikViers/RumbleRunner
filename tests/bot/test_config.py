@@ -3,6 +3,7 @@ import sys
 from app.bot.config import Config
 from app.bot.info import ROOT_DIR
 from tests.base import BaseTestCase
+import pathlib
 
 
 class TestConfig(BaseTestCase):
@@ -14,4 +15,4 @@ class TestConfig(BaseTestCase):
 
         self.assertEqual(parsed_config.bot_token, 'aaaa:bbbb')
         self.assertEqual(parsed_config.admin_username, 'superman')
-        self.assertEqual(parsed_config.storage_dir, 'C:\\in\\a\\distant\\land')
+        self.assertEqual(parsed_config.storage_dir, str(pathlib.Path('surely/relative\path').resolve()))
