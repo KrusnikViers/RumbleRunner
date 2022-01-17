@@ -1,0 +1,4 @@
+[DEFAULT]
+telegram_bot_token = bot_token_from_botfather
+bot_admin_username = login_without_@
+storage_directory = path_to_store_db_file

@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.mo
+
+# IDE directories
+.idea/
+
+# Files for local execution
+configuration.ini
+build/
+
+# Virtual environment
+venv/
