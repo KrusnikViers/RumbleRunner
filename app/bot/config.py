@@ -26,7 +26,7 @@ class Config:
         # Add your values here
         return cls(default_section.get('telegram_bot_token', ''),
                    default_section.get('bot_admin_username', ''),
-                   cls._check_and_normalize_dir(default_section.get('storage_directory', str(DEFAULT_DB_PATH))))
+                   cls._normalize_dir(default_section.get('storage_directory', str(DEFAULT_DB_PATH))))
 
     @staticmethod
     def _read_config_path_from_args() -> str:
@@ -43,7 +43,5 @@ class Config:
         return cls._parse_config_file(config_path)
 
     @staticmethod
-    def _check_and_normalize_dir(dir_str: str) -> str:
-        dir_path = pathlib.Path(dir_str)
-        assert dir_path.is_dir()
-        return str(dir_path.resolve())
+    def _normalize_dir(dir_str: str) -> str:
+        return str(pathlib.Path(dir_str).resolve())
