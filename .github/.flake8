@@ -1,0 +1,23 @@
+[flake8]
+
+per-file-ignores =
+    # imported but unused
+    app/public: F401
+    app/bot/models/all.py: F401
+    app/internal/storage/models/all.py: F401
+
+exclude =
+    app/bot/migrations
+
+select =
+    E9,
+    F63,
+    F7,
+    F82
+
+max-complexity = 10
+max-line-length = 121
+
+count = True
+show-source = True
+statistics = True
