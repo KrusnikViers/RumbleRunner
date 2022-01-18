@@ -27,7 +27,8 @@ class Dispatcher:
                 updater.dispatcher.add_handler(final_handler)
             elif isinstance(handler, CallbackHandlerReg):
                 handler_callable = create_handler_callable(handler.callable_fn,
-                                                           Dispatcher._normalize_filters(handler.filters),
+                                                           Dispatcher._normalize_filters(handler.filters,
+                                                                                         for_callback=True),
                                                            db_connection)
                 final_handler = CallbackQueryHandler(handler_callable, pattern=handler.pattern)
                 updater.dispatcher.add_handler(final_handler)
