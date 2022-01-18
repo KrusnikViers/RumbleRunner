@@ -12,8 +12,8 @@ from app.internal.storage.connection import DatabaseConnection
 
 
 class Dispatcher:
-    def __init__(self, updater: Updater, db_connection: DatabaseConnection, general_handlers: list,
-                 pending_requests_handlers: list):
+    def __init__(self, updater: Updater, db_connection: DatabaseConnection,
+                 general_handlers: list, pending_requests_handlers: dict):
         self.db = db_connection
         self.updater = updater
         self.pending_requests_dispatcher = PendingRequestsDispatcher(pending_requests_handlers)
