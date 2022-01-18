@@ -37,7 +37,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Test
         run: |
-          coverage run scripts/run_tests.py
+          coverage run --source=app -m unittest
           coverage xml -i
       - name: Upload coverage
         uses: codecov/codecov-action@v2
