@@ -29,6 +29,13 @@ class Context(ScopedSession):
     def send_response_message(self, text, **kwargs) -> Message:
         return self.update.effective_chat.send_message(text, **kwargs)
 
+    def command_arguments(self) -> str:
+        call_text = self.update.message.text
+        divider_index = call_text.find(' ')
+        if divider_index == -1:
+            return ''
+        return call_text[divider_index + 1:].strip()
+
     def __enter__(self):
         super(Context, self).__enter__()
         return self

@@ -1,5 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
+from app.internal.core.markup.callback_commands import encode_callback_data
+
 
 class InlineMenu(InlineKeyboardMarkup):
     # Expects a list of rows, where each row is a list of tuples ('Button text', [command, <parameters>])
@@ -8,11 +10,7 @@ class InlineMenu(InlineKeyboardMarkup):
     def __init__(self, markup: list, user_id: int = None):
         if user_id is not None:
             self._insert_user_id(markup, user_id)
-
-        def encode(data):
-            return ' '.join([str(x) for x in data])
-
-        super(InlineMenu, self).__init__([[InlineKeyboardButton(text, callback_data=encode(data))
+        super(InlineMenu, self).__init__([[InlineKeyboardButton(text, callback_data=encode_callback_data(data))
                                            for text, data in row] for row in markup])
 
     @staticmethod
