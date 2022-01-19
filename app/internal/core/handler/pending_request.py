@@ -27,7 +27,7 @@ class PendingRequestsDispatcher:
     def __init__(self, handlers: dict):
         self.handlers = handlers
 
-    def maybe_dispatch(self, context: Context):
+    def dispatch(self, context: Context):
         if not context.sender or not context.update.message:
             return
 

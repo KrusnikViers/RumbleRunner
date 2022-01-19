@@ -1,11 +1,8 @@
-from telegram import Update
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, \
-    Updater, CallbackContext, \
-    Filters as TgFilters
+    Updater, Filters as TgFilters
 
-from app.internal.core.handler.context import Context
 from app.internal.core.handler.filters import FilterType
-from app.internal.core.handler.memberhsip import maybe_update_memberships
+from app.internal.core.handler.memberhsip import update_memberships
 from app.internal.core.handler.pending_request import PendingRequestsDispatcher
 from app.internal.core.handler.registration import CommandHandlerReg, CallbackHandlerReg, create_handler_callable
 from app.internal.storage.connection import DatabaseConnection
@@ -18,30 +15,34 @@ class Dispatcher:
         self.updater = updater
         self.pending_requests_dispatcher = PendingRequestsDispatcher(pending_requests_handlers)
 
-        for handler in general_handlers:
+        self._add_default_handlers()
+        self._add_custom_handlers(general_handlers)
+
+    def _add_custom_handlers(self, custom_handlers: list):
+        for handler in custom_handlers:
             if isinstance(handler, CommandHandlerReg):
                 handler_callable = create_handler_callable(handler.callable_fn,
                                                            Dispatcher._normalize_filters(handler.filters),
-                                                           db_connection)
+                                                           self.db)
                 final_handler = CommandHandler(handler.commands, handler_callable)
-                updater.dispatcher.add_handler(final_handler)
+                self.updater.dispatcher.add_handler(final_handler)
             elif isinstance(handler, CallbackHandlerReg):
                 handler_callable = create_handler_callable(handler.callable_fn,
                                                            Dispatcher._normalize_filters(handler.filters,
                                                                                          for_callback=True),
-                                                           db_connection)
+                                                           self.db)
                 final_handler = CallbackQueryHandler(handler_callable, pattern=handler.pattern)
-                updater.dispatcher.add_handler(final_handler)
+                self.updater.dispatcher.add_handler(final_handler)
             else:
                 assert False
 
-        # universal_handler_callable = functools.partial(self._universal_handler, self)
-        updater.dispatcher.add_handler(MessageHandler(TgFilters.all, self._universal_handler))
-
-    def _universal_handler(self, update: Update, callback_context: CallbackContext):
-        with Context(update, callback_context, self.db) as context:
-            maybe_update_memberships(context)
-            self.pending_requests_dispatcher.maybe_dispatch(context)
+    def _add_default_handlers(self):
+        self.updater.dispatcher.add_handler(
+            MessageHandler(TgFilters.all,
+                           create_handler_callable(update_memberships, [], self.db)))
+        self.updater.dispatcher.add_handler(
+            MessageHandler(TgFilters.all,
+                           create_handler_callable(self.pending_requests_dispatcher.dispatch, [], self.db)))
 
     @staticmethod
     def _normalize_filters(filters: list, for_callback: bool = False) -> list:

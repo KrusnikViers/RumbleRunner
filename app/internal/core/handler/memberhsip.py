@@ -14,7 +14,7 @@ def _get_membership(context: Context, user_tg_id: int) -> Optional[TelegramUserI
     )).first()
 
 
-def maybe_update_memberships(context: Context):
+def update_memberships(context: Context):
     if not context.group:
         return
     users_to_create = [tg_user for tg_user in context.update.message.new_chat_members if not tg_user.is_bot]
