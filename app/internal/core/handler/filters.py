@@ -39,7 +39,7 @@ class Filter:
             return False
         try:
             callback_data = decode_callback_data(update)
-            return int(callback_data[0]) == update.effective_user.id
+            return int(callback_data.user_id) == update.effective_user.id
         except (ValueError, IndexError):
             return False
 

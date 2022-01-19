@@ -1,11 +1,17 @@
+from collections import namedtuple
+
 from telegram import Update
 
-
-def encode_callback_data(data: list) -> str:
-    return ' '.join([str(x) for x in data])
+CallbackData = namedtuple('CallbackData', 'command user_id data')
 
 
-def decode_callback_data(update: Update, is_personal=False) -> tuple:
-    offset = 2 if is_personal else 1
-    data_split = update.callback_query.data.split()
-    return tuple(update.callback_query.data.split()[offset:]) if len(data_split) > offset else []
+def encode_callback_data(data: CallbackData) -> str:
+    return "{0}:{1}:{2}".format(str(data.command), str(data.user_id), ' '.join([str(x) for x in data.data]))
+
+
+def decode_callback_data(update: Update) -> CallbackData:
+    data = update.callback_query.data.split(':', maxsplit=3)
+    command = data[0]
+    user_id = data[1]
+    general_data = data[2].split()
+    return CallbackData(command, user_id, general_data)

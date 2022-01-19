@@ -24,7 +24,7 @@ class TestContext(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update.message).text = PropertyMock(return_value='/command some text after')
         instance = context.Context(update, MagicMock(), MagicMock())
-        self.assertEqual('some text after', instance.command_arguments())
+        self.assertEqual('some text after', instance.command_argument())
 
     def test_empty_message_extraction(self):
         update = MagicMock()
@@ -33,7 +33,7 @@ class TestContext(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update.message).text = PropertyMock(return_value='/command_and_nothing_more')
         instance = context.Context(update, MagicMock(), MagicMock())
-        self.assertEqual('', instance.command_arguments())
+        self.assertEqual('', instance.command_argument())
 
     def test_send_response_message(self):
         update = MagicMock()

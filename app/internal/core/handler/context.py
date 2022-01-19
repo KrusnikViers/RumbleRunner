@@ -29,7 +29,7 @@ class Context(ScopedSession):
     def send_response_message(self, text, **kwargs) -> Message:
         return self.update.effective_chat.send_message(text, **kwargs)
 
-    def command_arguments(self) -> str:
+    def command_argument(self) -> str:
         call_text = self.update.message.text
         divider_index = call_text.find(' ')
         if divider_index == -1:

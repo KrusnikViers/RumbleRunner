@@ -8,6 +8,7 @@ from app.internal.core.handler.filters import Filter
 from app.internal.core.handler.reporting import ReportsSender
 from app.internal.storage.connection import DatabaseConnection
 from app.internal.storage.scoped_session import ScopedSession
+from app.internal.core.handler.default import default_processing
 
 
 # callable_fn signature: fn(context: Context)
@@ -22,7 +23,7 @@ class CommandHandlerReg:
 # CALLBACK filter auto-applied for the instances of CallbackHandlerReg.
 class CallbackHandlerReg:
     def __init__(self, callback_id: int, callable_fn, filters: list = None):
-        self.pattern = '^{0}.*$'.format(str(callback_id))
+        self.pattern = '^{0}:.*$'.format(str(callback_id))
         self.callable_fn = callable_fn
         self.filters = filters
 
@@ -33,6 +34,8 @@ def create_handler_callable(raw_callable, filters: list, db: DatabaseConnection)
         try:
             if Filter.apply(input_filters, update):
                 with Context(update, callback_context, db) as context:
+                    default_processing(context)
+                    context.session.commit()
                     handler_callable(context)
         except Exception as e:
             with ScopedSession(db) as session:

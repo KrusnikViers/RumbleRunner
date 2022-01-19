@@ -1,8 +1,8 @@
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, \
     Updater, Filters as TgFilters
 
+from app.internal.core.handler.default import default_processing
 from app.internal.core.handler.filters import FilterType
-from app.internal.core.handler.memberhsip import update_memberships
 from app.internal.core.handler.pending_request import PendingRequestsDispatcher
 from app.internal.core.handler.registration import CommandHandlerReg, CallbackHandlerReg, create_handler_callable
 from app.internal.storage.connection import DatabaseConnection
@@ -15,8 +15,8 @@ class Dispatcher:
         self.updater = updater
         self.pending_requests_dispatcher = PendingRequestsDispatcher(pending_requests_handlers)
 
-        self._add_default_handlers()
         self._add_custom_handlers(general_handlers)
+        self._add_default_handlers()
 
     def _add_custom_handlers(self, custom_handlers: list):
         for handler in custom_handlers:
@@ -38,11 +38,11 @@ class Dispatcher:
 
     def _add_default_handlers(self):
         self.updater.dispatcher.add_handler(
-            MessageHandler(TgFilters.all,
-                           create_handler_callable(update_memberships, [], self.db)))
+            MessageHandler(TgFilters.text,
+                           create_handler_callable(self.pending_requests_dispatcher.dispatch, [], self.db)))
         self.updater.dispatcher.add_handler(
             MessageHandler(TgFilters.all,
-                           create_handler_callable(self.pending_requests_dispatcher.dispatch, [], self.db)))
+                           create_handler_callable(default_processing, [FilterType.ALLOW_INCOMPLETE_DATA], self.db)))
 
     @staticmethod
     def _normalize_filters(filters: list, for_callback: bool = False) -> list:

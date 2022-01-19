@@ -33,9 +33,9 @@ class TestInputFilters(BaseTestCase):
         self.assertFalse(Filter.apply([FilterType.PERSONAL_CALLBACK], update))
         type(update.effective_user).id = PropertyMock(return_value=1234)
         type(update).callback_query = PropertyMock(return_value=MagicMock())
-        type(update.callback_query).data = PropertyMock(return_value='command 1234 some other data')
+        type(update.callback_query).data = PropertyMock(return_value='command:1234:some other data')
         self.assertTrue(Filter.apply([FilterType.PERSONAL_CALLBACK], update))
-        type(update.callback_query).data = PropertyMock(return_value='command wrong some other data')
+        type(update.callback_query).data = PropertyMock(return_value='command:wrong:some other data')
         self.assertFalse(Filter.apply([FilterType.PERSONAL_CALLBACK], update))
 
     def test_ignore_bots(self):
