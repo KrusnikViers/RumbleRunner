@@ -1,3 +1,4 @@
+import logging
 import traceback
 from typing import Optional
 
@@ -26,10 +27,11 @@ class ReportsSender:
 
     @classmethod
     def report_exception(cls, update: Optional[Update], connection: DatabaseConnection):
+        message = "Update:\n{}\n\nTraceback:\n{}".format(str(update), traceback.format_exc())
+        logging.warning(message)
         with ScopedSession(connection) as session:
             superuser = cls._find_superuser(session)
             if superuser:
-                message = "Update:\n{}\n\nTraceback:\n{}".format(str(update), traceback.format_exc())
                 cls.instance.bot.send_message(superuser.tg_id, message)
 
     @classmethod

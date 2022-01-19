@@ -23,7 +23,7 @@ class Context(ScopedSession):
                                                      last_name=update.effective_user.last_name,
                                                      username=update.effective_user.username)
         self.group: Optional[TelegramGroup] = None
-        if update.effective_chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
+        if update.effective_chat and update.effective_chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
             self.group = select_and_update_by_tg_id(self.session, TelegramGroup, update.effective_chat.id)
 
     def send_response_message(self, text, **kwargs) -> Message:

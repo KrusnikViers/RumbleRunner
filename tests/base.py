@@ -1,6 +1,7 @@
 import logging
 from unittest import TestCase
 
+from app.internal.core.handler.reporting import ReportsSender
 from app.internal.storage.connection import DatabaseConnection
 
 
@@ -23,4 +24,5 @@ class InBotTestCase(BaseTestCase):
 
     def setUp(self):
         super(InBotTestCase, self).setUp()
+        ReportsSender.instance = None
         self.connection = DatabaseConnection(None, for_tests=True)
