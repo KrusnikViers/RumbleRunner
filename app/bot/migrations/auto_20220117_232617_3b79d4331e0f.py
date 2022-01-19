@@ -1,8 +1,8 @@
-# 2022-01-01 00:00:00.000000
+# 2022-01-17 23:26:17.898478
 from alembic import op
 import sqlalchemy as sa
 
-revision = '9f5f73d7a9d2'
+revision = '3b79d4331e0f'
 down_revision = None
 branch_labels = None
 depends_on = None

@@ -6,4 +6,4 @@ def encode_callback_data(data: list) -> str:
 
 
 def decode_callback_data(update: Update) -> tuple:
-    return tuple(update.callback_query.data.split())
+    return tuple(update.callback_query.data.split()[1:])

@@ -24,7 +24,7 @@ def try_create_pending_request(context: Context, request_type: str) -> bool:
 
 
 class PendingRequestsDispatcher:
-    def __init__(self, handlers: list):
+    def __init__(self, handlers: dict):
         self.handlers = handlers
 
     def maybe_dispatch(self, context: Context):

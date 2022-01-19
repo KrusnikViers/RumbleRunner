@@ -12,8 +12,8 @@ from app.internal.storage.connection import DatabaseConnection
 
 
 class Dispatcher:
-    def __init__(self, updater: Updater, db_connection: DatabaseConnection, general_handlers: list,
-                 pending_requests_handlers: list):
+    def __init__(self, updater: Updater, db_connection: DatabaseConnection,
+                 general_handlers: list, pending_requests_handlers: dict):
         self.db = db_connection
         self.updater = updater
         self.pending_requests_dispatcher = PendingRequestsDispatcher(pending_requests_handlers)
@@ -27,7 +27,8 @@ class Dispatcher:
                 updater.dispatcher.add_handler(final_handler)
             elif isinstance(handler, CallbackHandlerReg):
                 handler_callable = create_handler_callable(handler.callable_fn,
-                                                           Dispatcher._normalize_filters(handler.filters),
+                                                           Dispatcher._normalize_filters(handler.filters,
+                                                                                         for_callback=True),
                                                            db_connection)
                 final_handler = CallbackQueryHandler(handler_callable, pattern=handler.pattern)
                 updater.dispatcher.add_handler(final_handler)
