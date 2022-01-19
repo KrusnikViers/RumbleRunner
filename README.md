@@ -17,7 +17,7 @@ Every Telegram bot needs token from the @BotFather. When registering a token, ke
 Options must be passed via configuration.ini file. By default, bot will be looking for `configuration.ini` file in the
 root directory (same level with this README file), or you can specify other path using `--config` parameter.
 
-## How to base my own bot on it
+## How to build custom bot on top
 
 See comments in `__init__.py` files in `app/bot` directory (ideally, this is only directory you should be working with).
 Of course, you are free to take a look/change code in the rest of the project, however, template is configured so that
