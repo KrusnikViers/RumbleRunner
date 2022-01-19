@@ -18,5 +18,5 @@ class TestInlineMenu(BaseTestCase):
         self.assertEqual([[InlineKeyboardButton('button', callback_data='111 test 500')]], menu.inline_keyboard)
 
     def test_user_id(self):
-        menu = InlineMenu([[('button', [111, 'test', 500])]], user_id=1234)
+        menu = InlineMenu([[('button', [111, 'test', 500])]], user_tg_id=1234)
         self.assertEqual([[InlineKeyboardButton('button', callback_data='111 1234 test 500')]], menu.inline_keyboard)

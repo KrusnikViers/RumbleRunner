@@ -37,15 +37,17 @@ class Filter:
     def _check_callback_sender(update: Update):
         if update.callback_query is None or not update.effective_user:
             return False
-        data = decode_callback_data(update)
-        # Second parameter should be equal to the sender user_id
-        return len(data) >= 2 and int(data[1]) == update.effective_user.id
+        try:
+            callback_data = decode_callback_data(update)
+            return int(callback_data[0]) == update.effective_user.id
+        except (ValueError, IndexError):
+            return False
 
     _CHECKS = {
         FilterType.GROUP: lambda x: x.effective_chat.type in [Chat.GROUP, Chat.SUPERGROUP],
         FilterType.PRIVATE: lambda x: x.effective_chat.type == Chat.PRIVATE,
         FilterType.CALLBACK: lambda x: x.callback_query is not None,
-        FilterType.PERSONAL_CALLBACK: _check_callback_sender,
+        FilterType.PERSONAL_CALLBACK: lambda x: Filter._check_callback_sender(x),
     }
 
     @staticmethod
