@@ -20,7 +20,7 @@ class ReportsSender:
 
     @classmethod
     def _find_superuser(cls, session) -> Optional[TelegramUser]:
-        if cls.instance and cls.instance.superuser_login:
+        if cls.instance and cls.instance.admin_username:
             return session.query(TelegramUser).filter_by(username=cls.instance.admin_username).one_or_none()
         return None
 
@@ -30,12 +30,12 @@ class ReportsSender:
             superuser = cls._find_superuser(session)
             if superuser:
                 message = "Update:\n{}\n\nTraceback:\n{}".format(str(update), traceback.format_exc())
-                cls.instance.bot.send_message(superuser.id, message)
+                cls.instance.bot.send_message(superuser.tg_id, message)
 
     @classmethod
     def forward_user_message(cls, context: Context):
         superuser = cls._find_superuser(context.session)
         if superuser:
-            cls.instance.bot.forward_message(superuser.id,
+            cls.instance.bot.forward_message(superuser.tg_id,
                                              context.update.effective_chat.id,
                                              context.update.message.message_id)
