@@ -5,6 +5,7 @@ from telegram.ext import CallbackContext
 
 from app.internal.core.handler.context import Context
 from app.internal.core.handler.filters import Filter
+from app.internal.core.handler.reporting import ReportsSender
 from app.internal.storage.connection import DatabaseConnection
 
 
@@ -28,8 +29,11 @@ class CallbackHandlerReg:
 def create_handler_callable(raw_callable, filters: list, db: DatabaseConnection):
     def _common_handler_callable(handler_callable, input_filters: list,  # predefined arguments
                                  update: Update, callback_context: CallbackContext):
-        if Filter.apply(input_filters, update):
-            with Context(update, callback_context, db) as context:
-                handler_callable(context)
+        try:
+            if Filter.apply(input_filters, update):
+                with Context(update, callback_context, db) as context:
+                    handler_callable(context)
+        except Exception as e:
+            ReportsSender.report_exception(update, db)
 
     return functools.partial(_common_handler_callable, raw_callable, filters)
