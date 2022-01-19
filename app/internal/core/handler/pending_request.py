@@ -51,4 +51,4 @@ class PendingRequestsDispatcher:
         try:
             self.handlers[request_type](context)
         except Exception:
-            ReportsSender.report_exception(context.update, context.session.connection())
+            ReportsSender.report_exception(context.update, context.session)

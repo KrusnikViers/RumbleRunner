@@ -2,13 +2,12 @@ import logging
 import traceback
 from typing import Optional
 
+from sqlalchemy.orm import Session
 from telegram import Bot, Update
 
 from app.bot.config import Config
 from app.internal.core.handler.context import Context
-from app.internal.storage.connection import DatabaseConnection
 from app.internal.storage.models.all import TelegramUser
-from app.internal.storage.scoped_session import ScopedSession
 
 
 class ReportsSender:
@@ -26,13 +25,12 @@ class ReportsSender:
         return None
 
     @classmethod
-    def report_exception(cls, update: Optional[Update], connection: DatabaseConnection):
+    def report_exception(cls, update: Optional[Update], session: Session):
         message = "Update:\n{}\n\nTraceback:\n{}".format(str(update), traceback.format_exc())
         logging.warning(message)
-        with ScopedSession(connection) as session:
-            superuser = cls._find_superuser(session)
-            if superuser:
-                cls.instance.bot.send_message(superuser.tg_id, message)
+        superuser = cls._find_superuser(session)
+        if superuser:
+            cls.instance.bot.send_message(superuser.tg_id, message)
 
     @classmethod
     def forward_user_message(cls, context: Context):
