@@ -3,15 +3,19 @@ from typing import Optional
 from sqlalchemy import and_
 
 from app.internal.core.handler.context import Context
-from app.internal.storage.models.all import TelegramUser, TelegramUserInGroup
+from app.internal.storage.models.all import TelegramUser, TelegramUserInGroup, TelegramGroup
 from app.internal.storage.util import select_and_update_by_tg_id
 
 
 def _get_membership(context: Context, user_tg_id: int) -> Optional[TelegramUserInGroup]:
-    return context.session.query(TelegramUserInGroup).where(and_(
-        TelegramUserInGroup.telegram_group.tg_id == context.update.effective_chat.id,
-        TelegramUserInGroup.telegram_user.tg_id == user_tg_id
-    )).first()
+    return context.session.query(TelegramUserInGroup) \
+        .join(TelegramUserInGroup.telegram_group). \
+        join(TelegramUserInGroup.telegram_user) \
+        .filter(
+        and_(
+            TelegramGroup.tg_id == context.update.effective_chat.id,
+            TelegramUser.tg_id == user_tg_id
+        )).first()
 
 
 def update_memberships(context: Context):

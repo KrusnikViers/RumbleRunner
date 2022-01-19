@@ -34,7 +34,7 @@ class Dispatcher:
                 final_handler = CallbackQueryHandler(handler_callable, pattern=handler.pattern)
                 self.updater.dispatcher.add_handler(final_handler)
             else:
-                assert False
+                raise ValueError
 
     def _add_default_handlers(self):
         self.updater.dispatcher.add_handler(
