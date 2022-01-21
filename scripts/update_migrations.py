@@ -1,9 +1,9 @@
-from app.bot.config import Config
-from app.internal.log import global_logging_init
-from app.internal.storage.connection import DatabaseConnection
-from app.internal.storage.migrations import router
+from app.config import Config
+from base.bot import Bot
+from base.database.alembic.migrations import MigrationEngine
+from base.database.connection import DatabaseConnection
 
-global_logging_init()
+Bot.set_logging_format()
 
 # Provide db_path command line parameter for this script.
 # Make sure that:
@@ -11,5 +11,5 @@ global_logging_init()
 # - db_path directory exists as well
 config = Config.get()
 connection = DatabaseConnection(config)
-
-router.make_migrations(connection.engine)
+migration_engine = MigrationEngine(connection.engine)
+migration_engine.make_migrations()
