@@ -9,8 +9,3 @@ class CallbackIds(IntEnum):
     COMMON_DELETE_MESSAGE_AND_PENDING_ACTION = 1
 
     # Add custom command codes here
-    PM_DELETE_PLAYER = 100
-
-    MM_SWITCH_PLAYER_SESSION_STATUS = 200
-    MM_CONFIRM_NEW_SESSION = 201
-    MM_CANCEL_NEW_SESSION = 202
