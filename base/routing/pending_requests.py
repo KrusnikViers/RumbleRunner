@@ -28,6 +28,17 @@ class PendingRequests:
         session.commit()
         return True
 
+    @staticmethod
+    def replace(session: Session, pending_action: str, user: TelegramUser,
+                group: Optional[TelegramGroup] = None):
+        existing_request = PendingRequests.get(session, user, group)
+        if existing_request is not None:
+            session.delete(existing_request)
+        session.add(TelegramUserRequest(type=pending_action,
+                                        telegram_user_id=user.id,
+                                        telegram_group_id=None if group is None else group.id))
+        session.commit()
+
 
 class PendingRequestsDispatcher:
     def __init__(self, handlers: Dict[str, Callable[[Context], Optional[str]]]):
@@ -38,7 +49,8 @@ class PendingRequestsDispatcher:
             return
 
         pending_request = PendingRequests.get(context.session, context.sender, context.group)
-        if pending_request is None: return
+        if pending_request is None:
+            return
 
         request_type = pending_request.type
         if request_type not in self.handlers:

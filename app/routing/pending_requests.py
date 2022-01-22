@@ -3,12 +3,15 @@
 # dispatcher would know how to process it.
 # If user has any pending action and received any message from the user, corresponding handler will be executed
 # for this message. Remember to clean pending action, if it was the message you were expecting!
-class PendingRequestType:
-    INTERNAL_REPORT = 'internal_report'  # Reserved for sending user reports to the admin personal chat.
-    # Add your values below
+from enum import unique, Enum
+
+
+@unique
+class PendingRequestType(str, Enum):
+    GR_CREATE_NEW = 'game_ranking_create'
 
 
 # List of your handlers with signature fn(context: Context)
 PENDING_REQUESTS_HANDLERS = {
-    PendingRequestType.INTERNAL_REPORT: ''  # TODO
+    PendingRequestType.GR_CREATE_NEW: ''  # TODO
 }

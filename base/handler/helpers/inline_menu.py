@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -6,7 +6,7 @@ from base.handler.context.data import CallbackData
 
 
 class InlineMenuButton:
-    def __init__(self, text: str, command: int, callback_data: str):
+    def __init__(self, text: str, command: int, callback_data: Union[str, list, None] = None):
         self.text = text
         self.command = command
         self.callback_data = callback_data

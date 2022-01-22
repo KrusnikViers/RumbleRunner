@@ -1,5 +1,7 @@
+from app.core.handlers import game_ranking
 from app.routing.callbacks import CallbackIds
-from base.api.routing import CallbackHandlerReg
+from base.api.routing import CallbackHandlerReg, CommandHandlerReg
+from base.api.routing import ChatType
 from base.handler.default import canceling
 
 UPDATE_HANDLERS = [
@@ -9,4 +11,6 @@ UPDATE_HANDLERS = [
                        canceling.delete_message_and_pending_request),
 
     # Add your instances of CallbackHandlerReg and CommandHandlerReg in this list to be picked up by the dispatching.
+    CommandHandlerReg(['trueskill'], game_ranking.main_menu, ChatType.GROUP),
+    CallbackHandlerReg(CallbackIds.TS_MAIN_MENU, game_ranking.main_menu_callback),
 ]

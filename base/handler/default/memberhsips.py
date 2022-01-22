@@ -21,10 +21,11 @@ def _get_membership(context: Context, user_tg_id: int) -> Optional[TelegramUserI
 class Memberships:
     @staticmethod
     def update(context: Context):
-        if not context.group:
+        if not context.group or not context.update.effective_message:
             return
-        users_to_create = [tg_user for tg_user in context.update.message.new_chat_members if not tg_user.is_bot]
-        user_to_remove = context.update.message.left_chat_member
+        users_to_create = [tg_user for tg_user in
+                           context.update.effective_message.new_chat_members if not tg_user.is_bot]
+        user_to_remove = context.update.effective_message.left_chat_member
         if user_to_remove is None or user_to_remove.id != context.sender.tg_id:
             sender_membership = _get_membership(context, context.update.effective_user.id)
             if not sender_membership:

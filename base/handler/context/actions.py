@@ -21,7 +21,7 @@ class Actions:
         self.chat_id: Optional[int] = None
         self.msg_id: Optional[int] = None
 
-        if self.update.message:
+        if self.update.effective_message:
             self._parse_message(self.update.effective_message)
         elif self.update.callback_query is not None and self.update.callback_query.message is not None:
             self._parse_message(self.update.callback_query.message)
@@ -35,7 +35,7 @@ class Actions:
 
     def send_message(self, text, **kwargs):
         with ScopedIgnoreTelegramErrors():
-            self.bot.send_message(text, chat_id=self.chat_id, **kwargs)
+            self.bot.send_message(self.chat_id, text, **kwargs)
 
     def edit_message(self, new_text: str):
         with ScopedIgnoreTelegramErrors():

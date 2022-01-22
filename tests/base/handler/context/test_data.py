@@ -2,7 +2,8 @@ from unittest.mock import MagicMock, PropertyMock
 
 from telegram import Chat
 
-from base.handler.context.data import Data
+from app.routing.callbacks import CallbackIds
+from base.handler.context.data import Data, CallbackData
 from tests.utils import BaseTestCase
 
 
@@ -13,6 +14,12 @@ class TestContextData(BaseTestCase):
         self.assertEqual('111:1:False What?', Data(update).callback_data.encode())
         type(update.callback_query).data = PropertyMock(return_value='111::False What?')
         self.assertEqual('111::False What?', Data(update).callback_data.encode())
+
+    def test_callback_data_encode(self):
+        self.assertEqual(CallbackData(CallbackIds.COMMON_DELETE_MESSAGE, data=['a', 14]).encode(), '0::a 14')
+        self.assertEqual(CallbackData(CallbackIds.COMMON_DELETE_MESSAGE, user_id=132, data=None).encode(), '0:132:')
+        self.assertEqual(CallbackData(CallbackIds.COMMON_DELETE_MESSAGE, user_id=11, data='a b c').encode(),
+                         '0:11:a b c')
 
     def test_message_extraction(self):
         update = MagicMock()

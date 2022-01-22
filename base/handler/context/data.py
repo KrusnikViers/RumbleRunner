@@ -1,13 +1,13 @@
-from typing import Optional
+from typing import Optional, Union
 
 from telegram import Update
 
 
 class CallbackData:
-    def __init__(self, command: int, user_id: Optional[int] = None, data: Optional[str] = None):
+    def __init__(self, command: int, user_id: Optional[int] = None, data: Union[None, str, list] = None):
         self.command = command
         self.user_id = user_id
-        self.data = data
+        self.data = ' '.join([str(x) for x in data]) if isinstance(data, list) else data
 
     @staticmethod
     def parse(raw_callback_data: str):
@@ -19,7 +19,8 @@ class CallbackData:
         )
 
     def encode(self):
-        return '{0}:{1}:{2}'.format(str(self.command), str(self.user_id) if self.user_id else '', self.data)
+        def empty_if_none(x): return '' if x is None else x
+        return '{0}:{1}:{2}'.format(int(self.command), str(empty_if_none(self.user_id)), empty_if_none(self.data))
 
 
 class Data:
