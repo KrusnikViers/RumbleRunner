@@ -8,10 +8,7 @@ from enum import unique, Enum
 
 @unique
 class PendingRequestType(str, Enum):
-    GR_CREATE_NEW = 'game_ranking_create'
+    EXAMPLE_DUMMY_TYPE = 'dummy'
 
-
-# List of your handlers with signature fn(context: Context)
-PENDING_REQUESTS_HANDLERS = {
-    PendingRequestType.GR_CREATE_NEW: ''  # TODO
-}
+    # Place your custom pending request types below
+    TS_NEW_PLAYER_NAME = 'new_player_name'

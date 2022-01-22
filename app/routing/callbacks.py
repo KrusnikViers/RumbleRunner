@@ -10,6 +10,7 @@ class CallbackIds(IntEnum):
 
     # Add custom command codes here
     TS_MAIN_MENU = 100
+    TS_STOP_SESSION = 101
 
     TS_PLAYERS_MENU = 110
     TS_NEW_PLAYER = 111
@@ -23,7 +24,6 @@ class CallbackIds(IntEnum):
 
     TS_SESSION_MENU = 130
     TS_NEW_SESSION = 131
-    TS_STOP_SESSION = 132
-    TS_CHOOSE_PLAYER_FOR_SESSION = 133
+    TS_CHOOSE_PLAYER_FOR_SESSION = 132
 
     TS_MATCH_MENU = 140

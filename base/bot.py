@@ -4,8 +4,7 @@ from typing import Optional
 from telegram.ext import Updater
 
 from app.config import Config
-from app.routing.dispatcher import UPDATE_HANDLERS
-from app.routing.pending_requests import PENDING_REQUESTS_HANDLERS
+from app.routing.dispatcher import HANDLERS_LIST
 from base.api.database import DatabaseConnection
 from base.handler.default.reporting import ReportsSender
 from base.routing.dispatcher import Dispatcher
@@ -28,8 +27,7 @@ class Bot:
         self.configuration = Config.get()
         self.updater = Updater(token=self.configuration.bot_token)
         self.database_connection = DatabaseConnection(self.configuration)
-        self.dispatcher = Dispatcher(self.updater, self.database_connection,
-                                     UPDATE_HANDLERS, PENDING_REQUESTS_HANDLERS)
+        self.dispatcher = Dispatcher(self.updater, self.database_connection, HANDLERS_LIST)
         ReportsSender.instance = ReportsSender(self.updater.bot, self.configuration)
 
         logging.info('Launching bot: ' + str(self.updater.bot.get_me()))

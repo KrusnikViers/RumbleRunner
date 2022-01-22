@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock, call
 
-from base.routing.dispatcher import Dispatcher
-from base.routing.registration import CommandHandlerReg, CallbackHandlerReg
 from app.routing.callbacks import CallbackIds
+from base.routing.dispatcher import Dispatcher
+from base.routing.registration import CommandHandlerReg, CallbackHandlerReg, PendingRequestHandlerReg
 from tests.utils import BaseTestCase
 from tests.utils import MatcherAny
 
@@ -14,14 +14,12 @@ class TestDispatcher(BaseTestCase):
         Dispatcher(updater_mock, MagicMock(),
                    [
                        CommandHandlerReg(['command_1', 'command_2'], MagicMock()),
-                       CallbackHandlerReg(CallbackIds.COMMON_DELETE_MESSAGE, MagicMock())
-                   ],
-                   {
-                       'pending_action': MagicMock()
-                   })
+                       CallbackHandlerReg(CallbackIds.COMMON_DELETE_MESSAGE, MagicMock()),
+                       PendingRequestHandlerReg('test_request', MagicMock()),
+                   ])
         updater_mock.dispatcher.add_handler.assert_has_calls(
             [call(MatcherAny()), call(MatcherAny()), call(MatcherAny())])
 
     def test_crash_on_bad_registration(self):
         with self.assertRaises(ValueError):
-            Dispatcher(MagicMock(), MagicMock(), ["incorrect_Reg_object"], {})
+            Dispatcher(MagicMock(), MagicMock(), ["incorrect_Reg_object"])

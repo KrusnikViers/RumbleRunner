@@ -1,8 +1,10 @@
-from typing import Callable, Optional
+import logging
+from typing import Callable, Optional, Dict
 
 from telegram import Update, Chat
 from telegram.ext import CallbackContext
 
+from app.routing.pending_requests import PendingRequestType
 from base.database.connection import DatabaseConnection
 from base.database.scoped_session import ScopedSession
 from base.handler.context.context import Context
@@ -10,6 +12,7 @@ from base.handler.context.data import CallbackData
 from base.handler.context.definitions import ChatType
 from base.handler.default.memberhsips import Memberships
 from base.handler.default.reporting import ReportsSender
+from base.routing.pending_requests import PendingRequests
 
 
 class _Filter:
@@ -77,3 +80,35 @@ class WrapperFunctions:
                   # Up to this point, arguments are predefined by the *Reg function.
                   update: Update, callback_context: CallbackContext):
         WrapperFunctions._handler_body(handler_fn, db, update, callback_context)
+
+    @staticmethod
+    def pending_action(handlers_dict: Dict[str, Callable[[Context], Optional[str]]], db: DatabaseConnection,
+                       # Up to this point, arguments are predefined by the *Reg function.
+                       update: Update, callback_context: CallbackContext):
+        with Context(update, callback_context, db) as context:
+            try:
+                Memberships.update(context)
+                context.session.commit()
+
+                if not context.sender or not context.data.text:
+                    return
+                request = PendingRequests.get(context)
+                if request is None:
+                    return
+                try:
+                    request_type = PendingRequestType(request.type)
+                except TypeError:
+                    logging.warning('Bad request type: {}'.format(request.type))
+                    return
+
+                if request_type not in handlers_dict:
+                    logging.warning('Missing handler for request type: {}'.format(request.type))
+                    return
+                context.pending_request = request
+
+                answer = handlers_dict[request_type](context)
+                if answer is not None:
+                    context.actions.send_message(answer)
+            except Exception:
+                with ScopedSession(db) as session:
+                    ReportsSender.report_exception(update, session)

@@ -1,6 +1,7 @@
 from typing import Callable, Optional
 
 from app.routing.callbacks import CallbackIds
+from app.routing.pending_requests import PendingRequestType
 from base.handler.context.context import Context
 from base.handler.context.definitions import ChatType
 
@@ -19,3 +20,9 @@ class CallbackHandlerReg:
         self.pattern = '^{0}:.*:.*$'.format(int(callback_id))
         self.callable_fn = callable_fn
         self.chat_type = chat_type
+
+
+class PendingRequestHandlerReg:
+    def __init__(self, request_type: PendingRequestType, callable_fn: Callable[[Context], Optional[str]]):
+        self.request_type = request_type
+        self.callable_fn = callable_fn

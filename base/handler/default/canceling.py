@@ -7,7 +7,7 @@ def delete_message(context: Context):
 
 
 def delete_message_and_pending_request(context: Context):
-    pending_request = PendingRequests.get(context.session, context.sender, context.group)
+    pending_request = PendingRequests.get(context)
     if pending_request:
         context.session.delete(pending_request)
         context.session.commit()

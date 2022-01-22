@@ -2,10 +2,11 @@ from unittest.mock import MagicMock, PropertyMock
 
 from telegram import Chat, User as TgUser, Message as TgMessage
 
+from app.routing.pending_requests import PendingRequestType
 from base.database.scoped_session import ScopedSession
 from base.handler.context.context import Context
 from base.models.all import TelegramUser
-from base.routing.pending_requests import PendingRequests, PendingRequestsDispatcher
+from base.routing.pending_requests import PendingRequests
 from tests.utils import InBotTestCase
 
 
@@ -17,9 +18,9 @@ class TestPendingRequests(InBotTestCase):
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
+            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertEqual(PendingRequests.get(context.session, context.sender, context.group).type, 'test_request')
+            self.assertEqual(PendingRequests.get(context).type, 'dummy')
 
     def test_replace_request(self):
         with ScopedSession(self.connection) as session:
@@ -28,31 +29,15 @@ class TestPendingRequests(InBotTestCase):
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
+            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            old_id = PendingRequests.get(context).id
         with Context(update, MagicMock(), self.connection) as context:
-            PendingRequests.replace(context.session, 'new_test_request', context.sender, context.group)
+            PendingRequests.replace(context, PendingRequestType.EXAMPLE_DUMMY_TYPE)
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertEqual(PendingRequests.get(context.session, context.sender, context.group).type,
-                             'new_test_request')
+            self.assertEqual(PendingRequests.get(context).type, PendingRequestType.EXAMPLE_DUMMY_TYPE)
+            self.assertNotEqual(old_id, PendingRequests.get(context))
 
-    def test_dispatching_no_sender(self):
-        disp = PendingRequestsDispatcher({})
-        with Context(MagicMock(), MagicMock(), self.connection) as context:
-            disp.dispatch(context)
-
-    def test_dispatching_no_request(self):
-        with ScopedSession(self.connection) as session:
-            session.add(TelegramUser(tg_id=1, first_name='a'))
-        update = MagicMock()
-        type(update).effective_user = TgUser(1, 'a', is_bot=False)
-        type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
-
-        disp = PendingRequestsDispatcher({})
-        with Context(update, MagicMock(), self.connection) as context:
-            disp.dispatch(context)
-
-    def test_dispatching_no_handler(self):
+    def test_duplicate_request(self):
         with ScopedSession(self.connection) as session:
             session.add(TelegramUser(tg_id=1, first_name='a'))
         update = MagicMock()
@@ -60,35 +45,5 @@ class TestPendingRequests(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
-
-        disp = PendingRequestsDispatcher({})
-        with Context(update, MagicMock(), self.connection) as context:
-            disp.dispatch(context)
-
-    def test_dispatching_duplicate_request(self):
-        with ScopedSession(self.connection) as session:
-            session.add(TelegramUser(tg_id=1, first_name='a'))
-        update = MagicMock()
-        type(update).effective_user = TgUser(1, 'a', is_bot=False)
-        type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
-        with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
-            self.assertFalse(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
-
-    def test_dispatching_ok(self):
-        callable_fn = MagicMock()
-        with ScopedSession(self.connection) as session:
-            session.add(TelegramUser(tg_id=1, first_name='a'))
-        update = MagicMock()
-        type(update).effective_user = TgUser(1, 'a', is_bot=False)
-        type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
-        with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
-
-        disp = PendingRequestsDispatcher({'test_request': callable_fn})
-        with Context(update, MagicMock(), self.connection) as context:
-            disp.dispatch(context)
-            callable_fn.assert_called_once_with(context)
+            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            self.assertFalse(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))

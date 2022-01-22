@@ -33,6 +33,7 @@ class Context(ScopedSession):
         if update.effective_chat and update.effective_chat.type in [Chat.GROUP, Chat.SUPERGROUP]:
             self.group = DBHelpers.select_and_update_by_tg_id(self.session, TelegramGroup, update.effective_chat.id,
                                                               name=update.effective_chat.title)
+        self.group_id = self.group.id if self.group else None
 
         self.pending_request: Optional[TelegramUserRequest] = None  # Set by dispatch_pending_requests handler
 

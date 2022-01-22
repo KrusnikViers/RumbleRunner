@@ -8,7 +8,7 @@ class ScopedIgnoreTelegramErrors:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type == TelegramError:
+        if isinstance(exc_val, TelegramError):
             return True
 
 
@@ -37,14 +37,17 @@ class Actions:
         with ScopedIgnoreTelegramErrors():
             self.bot.send_message(self.chat_id, text, **kwargs)
 
-    def edit_message(self, new_text: str):
+    def edit_message(self, new_text: str, saved_msg_id=None):
+        message_id = self.msg_id if saved_msg_id is None else saved_msg_id
         with ScopedIgnoreTelegramErrors():
-            self.bot.edit_message_text(new_text, chat_id=self.chat_id, message_id=self.msg_id)
+            self.bot.edit_message_text(new_text, chat_id=self.chat_id, message_id=message_id)
 
-    def edit_markup(self, new_markup):
+    def edit_markup(self, new_markup, saved_msg_id=None):
+        message_id = self.msg_id if saved_msg_id is None else saved_msg_id
         with ScopedIgnoreTelegramErrors():
-            self.bot.edit_message_reply_markup(chat_id=self.chat_id, message_id=self.msg_id, reply_markup=new_markup)
+            self.bot.edit_message_reply_markup(chat_id=self.chat_id, message_id=message_id, reply_markup=new_markup)
 
-    def delete_message(self):
+    def delete_message(self, saved_msg_id=None):
+        message_id = self.msg_id if saved_msg_id is None else saved_msg_id
         with ScopedIgnoreTelegramErrors():
-            self.bot.delete_message(chat_id=self.chat_id, message_id=self.msg_id)
+            self.bot.delete_message(chat_id=self.chat_id, message_id=message_id)

@@ -1,22 +1,31 @@
-from app.core.handlers.inline_menus import MenuConstructor
-from app.models.game_ranking import GameRanking
-from base.api.handler import Context
+from app.core.entities.game_session import GameSessionEntity
+from app.routing.callbacks import CallbackIds
+from base.api.handler import Context, InlineMenu, InlineMenuButton
 
 
-def main_menu(context: Context):
-    game_ranking = context.session.query(GameRanking).filter(
-        GameRanking.tg_group_id == context.group.tg_id).one_or_none()
-    if game_ranking is None:
-        game_ranking = GameRanking(tg_group_id=context.group.tg_id)
-        context.session.add(game_ranking)
-        context.session.commit()
+class GameRankingHandlers:
+    @staticmethod
+    def build_main_menu(context: Context):
+        menu = list()
+        existing_session = GameSessionEntity.get(context)
+        if existing_session is not None:
+            menu.append([InlineMenuButton('Start new match!', CallbackIds.TS_MATCH_MENU)])
+            menu.append([InlineMenuButton('Manage session...', CallbackIds.TS_SESSION_MENU, existing_session.id),
+                         InlineMenuButton('Stop session', CallbackIds.TS_STOP_SESSION, existing_session.id)])
+        menu.append([InlineMenuButton('New game session...', CallbackIds.TS_NEW_SESSION)])
+        menu.append([InlineMenuButton('Manage players...', CallbackIds.TS_PLAYERS_MENU)])
+        menu.append([InlineMenuButton('Close', CallbackIds.COMMON_DELETE_MESSAGE)])
+        return InlineMenu(menu, context.sender.tg_id)
 
-    menu = MenuConstructor(context.session, context.sender)
-    context.actions.send_message('Game Rankings', reply_markup=menu.main_menu(game_ranking))
+    @staticmethod
+    def main_menu(context: Context):
+        context.actions.send_message('Game Rankings', reply_markup=GameRankingHandlers.build_main_menu(context))
 
+    @staticmethod
+    def main_menu_callback(context: Context):
+        context.actions.edit_markup(GameRankingHandlers.build_main_menu(context))
 
-def main_menu_callback(context: Context):
-    game_ranking = context.session.query(GameRanking).filter(
-        GameRanking.tg_group_id == context.group.tg_id).first()
-    menu = MenuConstructor(context.session, context.sender)
-    context.actions.edit_markup(menu.main_menu(game_ranking))
+    @staticmethod
+    def stop_session(context: Context):
+        GameSessionEntity.stop_current_session(context)
+        GameRankingHandlers.main_menu_callback(context)

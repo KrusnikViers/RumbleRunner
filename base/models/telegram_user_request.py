@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
 from base.models.base import BaseDBModel
@@ -9,6 +9,7 @@ class TelegramUserRequest(BaseDBModel):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     type = Column(String, nullable=False)
+    original_message_id = Column(BigInteger, nullable=True)
 
     telegram_user_id = Column(Integer, ForeignKey("telegram_user.id"), nullable=False)
     telegram_user = relationship("TelegramUser", back_populates="requests")
