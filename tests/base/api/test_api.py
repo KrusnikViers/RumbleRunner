@@ -2,7 +2,7 @@ import glob
 import pathlib
 from os import path
 
-from app.info import ROOT_DIR
+from app.api.info import ROOT_DIR
 from tests.utils import BaseTestCase
 
 

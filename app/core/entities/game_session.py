@@ -31,3 +31,13 @@ class GameSessionEntity:
                 player.game_session_id = None
             current_session.is_ongoing = False
             context.session.commit()
+
+    @staticmethod
+    def text_description(context: Context):
+        current_session = GameSessionEntity.get(context)
+        if not current_session:
+            return 'All is quiet for now'
+        return 'Game session is in progress!\n\nMatches played: {}\nParticipants: {}'.format(
+            current_session.matches_played,
+            ', '.join([player.name for player in current_session.players])
+        )

@@ -4,15 +4,15 @@ from typing import Callable, Optional, Dict
 from telegram import Update, Chat
 from telegram.ext import CallbackContext
 
-from app.routing.pending_requests import PendingRequestType
+from app.api.command_list import PendingRequestId
 from base.database.connection import DatabaseConnection
 from base.database.scoped_session import ScopedSession
 from base.handler.context.context import Context
 from base.handler.context.data import CallbackData
-from base.handler.context.definitions import ChatType
 from base.handler.default.memberhsips import Memberships
 from base.handler.default.reporting import ReportsSender
 from base.routing.pending_requests import PendingRequests
+from base.routing.registration import ChatType
 
 
 class _Filter:
@@ -96,7 +96,7 @@ class WrapperFunctions:
                 if request is None:
                     return
                 try:
-                    request_type = PendingRequestType(request.type)
+                    request_type = PendingRequestId(request.type)
                 except TypeError:
                     logging.warning('Bad request type: {}'.format(request.type))
                     return

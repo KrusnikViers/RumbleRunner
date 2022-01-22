@@ -1,4 +1,4 @@
-from app.config import Config
+from app.api.config import Config
 from base.database.connection import DatabaseConnection
 from tests.utils import BaseTestCase
 

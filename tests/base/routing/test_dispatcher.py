@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, call
 
-from app.routing.callbacks import CallbackIds
+from app.api.command_list import CallbackId
 from base.routing.dispatcher import Dispatcher
 from base.routing.registration import CommandHandlerReg, CallbackHandlerReg, PendingRequestHandlerReg
 from tests.utils import BaseTestCase
@@ -14,7 +14,7 @@ class TestDispatcher(BaseTestCase):
         Dispatcher(updater_mock, MagicMock(),
                    [
                        CommandHandlerReg(['command_1', 'command_2'], MagicMock()),
-                       CallbackHandlerReg(CallbackIds.COMMON_DELETE_MESSAGE, MagicMock()),
+                       CallbackHandlerReg(CallbackId.COMMON_DELETE_MESSAGE, MagicMock()),
                        PendingRequestHandlerReg('test_request', MagicMock()),
                    ])
         updater_mock.dispatcher.add_handler.assert_has_calls(

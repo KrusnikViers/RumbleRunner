@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from app.config import Config
+from app.api.config import Config
 from base.database.scoped_session import ScopedSession
 from base.handler.context.context import Context
 from base.handler.default.reporting import ReportsSender

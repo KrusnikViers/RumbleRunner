@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 from telegram import Chat, User as TgUser, Message as TgMessage
 
-from app.routing.pending_requests import PendingRequestType
+from app.api.command_list import PendingRequestId
 from base.database.scoped_session import ScopedSession
 from base.handler.context.context import Context
 from base.models.all import TelegramUser
@@ -19,7 +19,7 @@ class TestPendingRequests(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update.effective_message).message_id = 000
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
         with Context(update, MagicMock(), self.connection) as context:
             self.assertEqual(PendingRequests.get(context).type, 'dummy')
 
@@ -31,12 +31,12 @@ class TestPendingRequests(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update.effective_message).message_id = 000
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
             old_id = PendingRequests.get(context).id
         with Context(update, MagicMock(), self.connection) as context:
-            PendingRequests.replace(context, PendingRequestType.EXAMPLE_DUMMY_TYPE)
+            PendingRequests.replace(context, PendingRequestId.EXAMPLE_DUMMY_TYPE)
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertEqual(PendingRequests.get(context).type, PendingRequestType.EXAMPLE_DUMMY_TYPE)
+            self.assertEqual(PendingRequests.get(context).type, PendingRequestId.EXAMPLE_DUMMY_TYPE)
             self.assertNotEqual(old_id, PendingRequests.get(context))
 
     def test_duplicate_request(self):
@@ -47,5 +47,5 @@ class TestPendingRequests(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
-            self.assertFalse(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
+            self.assertFalse(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))

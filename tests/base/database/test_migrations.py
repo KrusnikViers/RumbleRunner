@@ -1,7 +1,7 @@
 import os
 import sys
 
-from app.info import APP_DIR
+from app.api.info import APP_DIR
 from base.database.alembic.migrations import MigrationEngine
 from tests.utils import InBotTestCase
 

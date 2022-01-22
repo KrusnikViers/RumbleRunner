@@ -10,6 +10,7 @@ class GameSession(BaseDBModel):
     id = Column(Integer, autoincrement=True, primary_key=True)
 
     start_time = Column(DateTime(timezone=True), server_default=func.now())
+    matches_played = Column(Integer, nullable=False, default=0)
     is_ongoing = Column(Boolean, nullable=False, default=False)
 
     game_ranking_id = Column(ForeignKey('game_ranking.id'), nullable=False)

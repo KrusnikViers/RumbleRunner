@@ -4,7 +4,7 @@ from typing import Optional
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.config import Config
+from app.api.config import Config
 from base.database.alembic.migrations import MigrationEngine
 
 

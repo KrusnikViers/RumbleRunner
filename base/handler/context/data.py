@@ -20,6 +20,7 @@ class CallbackData:
 
     def encode(self):
         def empty_if_none(x): return '' if x is None else x
+
         return '{0}:{1}:{2}'.format(int(self.command), str(empty_if_none(self.user_id)), empty_if_none(self.data))
 
 

@@ -1,4 +1,4 @@
-from app.config import Config
+from app.api.config import Config
 from base.bot import Bot
 from base.database.alembic.migrations import MigrationEngine
 from base.database.connection import DatabaseConnection

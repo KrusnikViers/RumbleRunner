@@ -1,8 +1,8 @@
+from app.api.command_list import CallbackId
 from app.core.entities.game_ranking import GameRankingEntity
 from app.core.entities.game_session import GameSessionEntity
 from app.core.entities.player import PlayerEntity
 from app.models.all import Player
-from app.routing.callbacks import CallbackIds
 from base.api.handler import Context, InlineMenu, InlineMenuButton
 
 
@@ -13,15 +13,16 @@ class GameSessionHandlers:
         game_session = GameSessionEntity.get_or_create(context)
         players = PlayerEntity.get_for_ranking(context, GameRankingEntity.get_or_create(context))
         for player in players:
-            text_template = '{} (remove)' if player.game_session_id == game_session.id else 'Add {}'
+            text_template = '✅ {} (remove)' if player.game_session_id == game_session.id else '⛔ {} (add)'
             menu.append([
-                InlineMenuButton(text_template.format(player.name), CallbackIds.TS_CHOOSE_PLAYER_FOR_SESSION, player.id)
+                InlineMenuButton(text_template.format(player.name), CallbackId.TS_CHOOSE_PLAYER_FOR_SESSION, player.id)
             ])
-        menu.append([InlineMenuButton('Back', CallbackIds.TS_MAIN_MENU)])
+        menu.append([InlineMenuButton('Back', CallbackId.TS_MAIN_MENU)])
         return InlineMenu(menu, user_tg_id=context.sender.tg_id)
 
     @staticmethod
     def session_menu(context: Context):
+        context.actions.edit_message(GameSessionEntity.text_description(context))
         context.actions.edit_markup(GameSessionHandlers.build_main_menu(context))
 
     @staticmethod

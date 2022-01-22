@@ -6,7 +6,7 @@ import configparser
 import logging
 import pathlib
 
-from app.info import PROJECT_FULL_NAME, DEFAULT_CONFIG_PATH, DEFAULT_DB_PATH
+from app.api.info import PROJECT_FULL_NAME, DEFAULT_CONFIG_PATH, DEFAULT_DB_PATH
 
 
 class Config:

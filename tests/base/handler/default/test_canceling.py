@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from app.routing.pending_requests import PendingRequestType
+from app.api.command_list import PendingRequestId
 from base.database.scoped_session import ScopedSession
 from base.handler.default.canceling import delete_message, delete_message_and_pending_request
 from base.models.all import TelegramUser
@@ -23,7 +23,7 @@ class TestCancelingHandlers(InBotTestCase):
             type(context).sender = user
             type(context).group_id = None
             type(context.actions).msg_id = 000
-            self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
             self.assertIsNotNone(PendingRequests.get(context))
         with ScopedSession(self.connection) as session:
             user = session.query(TelegramUser).first()

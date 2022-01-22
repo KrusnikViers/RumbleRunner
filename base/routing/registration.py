@@ -1,9 +1,15 @@
+from enum import Enum, unique
 from typing import Callable, Optional
 
-from app.routing.callbacks import CallbackIds
-from app.routing.pending_requests import PendingRequestType
+from app.api.command_list import CallbackId, PendingRequestId
 from base.handler.context.context import Context
-from base.handler.context.definitions import ChatType
+
+
+@unique
+class ChatType(Enum):
+    ALL = 0
+    PRIVATE = 1
+    GROUP = 2
 
 
 class CommandHandlerReg:
@@ -15,7 +21,7 @@ class CommandHandlerReg:
 
 
 class CallbackHandlerReg:
-    def __init__(self, callback_id: CallbackIds, callable_fn: Callable[[Context], Optional[str]],
+    def __init__(self, callback_id: CallbackId, callable_fn: Callable[[Context], Optional[str]],
                  chat_type: ChatType = ChatType.ALL):
         self.pattern = '^{0}:.*:.*$'.format(int(callback_id))
         self.callable_fn = callable_fn
@@ -23,6 +29,6 @@ class CallbackHandlerReg:
 
 
 class PendingRequestHandlerReg:
-    def __init__(self, request_type: PendingRequestType, callable_fn: Callable[[Context], Optional[str]]):
+    def __init__(self, request_type: PendingRequestId, callable_fn: Callable[[Context], Optional[str]]):
         self.request_type = request_type
         self.callable_fn = callable_fn

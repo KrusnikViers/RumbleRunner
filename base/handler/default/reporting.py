@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from telegram import Bot, Update
 
-from app.config import Config
+from app.api.config import Config
 from base.handler.context.context import Context
 from base.models.all import TelegramUser
 

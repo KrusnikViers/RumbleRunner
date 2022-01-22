@@ -1,8 +1,8 @@
 import pathlib
 import sys
 
-from app.config import Config
-from app.info import ROOT_DIR
+from app.api.config import Config
+from app.api.info import ROOT_DIR
 from tests.utils import BaseTestCase
 
 
