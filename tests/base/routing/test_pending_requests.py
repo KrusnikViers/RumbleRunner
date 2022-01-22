@@ -1,10 +1,11 @@
 from unittest.mock import MagicMock, PropertyMock
 
-from telegram import Chat, User as TgUser
+from telegram import Chat, User as TgUser, Message as TgMessage
 
-from app.internal.core.handler.pending_request import *
-from app.internal.storage.models.all import TelegramUser
-from app.internal.storage.scoped_session import ScopedSession
+from base.database.scoped_session import ScopedSession
+from base.handler.context.context import Context
+from base.models.all import TelegramUser
+from base.routing.pending_requests import PendingRequests, PendingRequestsDispatcher
 from tests.utils import InBotTestCase
 
 
@@ -16,9 +17,9 @@ class TestPendingRequests(InBotTestCase):
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(try_create_pending_request(context, 'test_request'))
+            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertEqual(get_pending_request(context).type, 'test_request')
+            self.assertEqual(PendingRequests.get(context.session, context.sender, context.group).type, 'test_request')
 
     def test_dispatching_no_sender(self):
         disp = PendingRequestsDispatcher({})
@@ -31,7 +32,7 @@ class TestPendingRequests(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = 'test_message'
+        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
 
         disp = PendingRequestsDispatcher({})
         with Context(update, MagicMock(), self.connection) as context:
@@ -43,9 +44,9 @@ class TestPendingRequests(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = 'test_message'
+        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(try_create_pending_request(context, 'test_request'))
+            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
 
         disp = PendingRequestsDispatcher({})
         with Context(update, MagicMock(), self.connection) as context:
@@ -57,10 +58,10 @@ class TestPendingRequests(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = 'test_message'
+        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(try_create_pending_request(context, 'test_request'))
-            self.assertFalse(try_create_pending_request(context, 'test_request'))
+            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
+            self.assertFalse(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
 
     def test_dispatching_ok(self):
         callable_fn = MagicMock()
@@ -69,28 +70,11 @@ class TestPendingRequests(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = 'test_message'
+        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(try_create_pending_request(context, 'test_request'))
+            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
 
         disp = PendingRequestsDispatcher({'test_request': callable_fn})
         with Context(update, MagicMock(), self.connection) as context:
             disp.dispatch(context)
             callable_fn.assert_called_once_with(context)
-
-    def test_dispanching_raises_exception(self):
-        def callable_fn(_):
-            raise ValueError
-
-        with ScopedSession(self.connection) as session:
-            session.add(TelegramUser(tg_id=1, first_name='a'))
-        update = MagicMock()
-        type(update).effective_user = TgUser(1, 'a', is_bot=False)
-        type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = 'test_message'
-        with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(try_create_pending_request(context, 'test_request'))
-
-        disp = PendingRequestsDispatcher({'test_request': callable_fn})
-        with Context(update, MagicMock(), self.connection) as context:
-            disp.dispatch(context)

@@ -1,8 +1,8 @@
 from unittest.mock import MagicMock, call
 
-from app.internal.core.dispatcher import Dispatcher
-from app.internal.core.handler.filters import FilterType
-from app.internal.core.handler.registration import CommandHandlerReg, CallbackHandlerReg
+from base.routing.dispatcher import Dispatcher
+from base.routing.registration import CommandHandlerReg, CallbackHandlerReg
+from app.routing.callbacks import CallbackIds
 from tests.utils import BaseTestCase
 from tests.utils import MatcherAny
 
@@ -14,7 +14,7 @@ class TestDispatcher(BaseTestCase):
         Dispatcher(updater_mock, MagicMock(),
                    [
                        CommandHandlerReg(['command_1', 'command_2'], MagicMock()),
-                       CallbackHandlerReg(111, MagicMock(), [FilterType.PERSONAL_CALLBACK])
+                       CallbackHandlerReg(CallbackIds.COMMON_DELETE_MESSAGE, MagicMock())
                    ],
                    {
                        'pending_action': MagicMock()

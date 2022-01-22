@@ -11,7 +11,7 @@ class TelegramUserRequest(BaseDBModel):
     type = Column(String, nullable=False)
 
     telegram_user_id = Column(Integer, ForeignKey("telegram_user.id"), nullable=False)
-    telegram_user = relationship("TelegramUser", back_populates="requests", cascade="all, delete")
+    telegram_user = relationship("TelegramUser", back_populates="requests")
 
     telegram_group_id = Column(Integer, ForeignKey("telegram_group.id"), nullable=True)
-    telegram_group = relationship("TelegramGroup", back_populates="user_requests", cascade="all, delete")
+    telegram_group = relationship("TelegramGroup", back_populates="user_requests")

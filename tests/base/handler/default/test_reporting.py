@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock
 
-from app.bot.config import Config
-from app.internal.core.handler.context import Context
-from app.internal.core.handler.reporting import ReportsSender
-from app.internal.storage.models.all import TelegramUser
-from app.internal.storage.scoped_session import ScopedSession
+from app.config import Config
+from base.database.scoped_session import ScopedSession
+from base.handler.context.context import Context
+from base.handler.default.reporting import ReportsSender
+from base.models.all import TelegramUser
 from tests.utils import InBotTestCase, MatcherAny
 
 
