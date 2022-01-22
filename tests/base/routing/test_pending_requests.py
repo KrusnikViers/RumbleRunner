@@ -21,6 +21,20 @@ class TestPendingRequests(InBotTestCase):
         with Context(update, MagicMock(), self.connection) as context:
             self.assertEqual(PendingRequests.get(context.session, context.sender, context.group).type, 'test_request')
 
+    def test_replace_request(self):
+        with ScopedSession(self.connection) as session:
+            session.add(TelegramUser(tg_id=1, first_name='a'))
+        update = MagicMock()
+        type(update).effective_user = TgUser(1, 'a', is_bot=False)
+        type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
+        with Context(update, MagicMock(), self.connection) as context:
+            self.assertTrue(PendingRequests.create(context.session, 'test_request', context.sender, context.group))
+        with Context(update, MagicMock(), self.connection) as context:
+            PendingRequests.replace(context.session, 'new_test_request', context.sender, context.group)
+        with Context(update, MagicMock(), self.connection) as context:
+            self.assertEqual(PendingRequests.get(context.session, context.sender, context.group).type,
+                             'new_test_request')
+
     def test_dispatching_no_sender(self):
         disp = PendingRequestsDispatcher({})
         with Context(MagicMock(), MagicMock(), self.connection) as context:
