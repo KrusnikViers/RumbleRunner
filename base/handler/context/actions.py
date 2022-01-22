@@ -22,12 +22,12 @@ class Actions:
         self.msg_id: Optional[int] = None
 
         if self.update.message:
-            self._parse_message(self.update.message)
-        elif self.update.callback_query and self.update.callback_query.message:
+            self._parse_message(self.update.effective_message)
+        elif self.update.callback_query is not None and self.update.callback_query.message is not None:
             self._parse_message(self.update.callback_query.message)
 
     def _parse_message(self, message: Message):
-        if message.bot and message.message_id and message.chat_id:
+        if message is not None:
             self.bot = message.bot
             self.chat_id = message.chat_id
             self.msg_id = message.message_id
@@ -43,7 +43,7 @@ class Actions:
 
     def edit_markup(self, new_markup):
         with ScopedIgnoreTelegramErrors():
-            self.bot.edit_message_reply_markup(chat=self.chat_id, message_id=self.msg_id, reply_markup=new_markup)
+            self.bot.edit_message_reply_markup(chat_id=self.chat_id, message_id=self.msg_id, reply_markup=new_markup)
 
     def delete_message(self):
         with ScopedIgnoreTelegramErrors():

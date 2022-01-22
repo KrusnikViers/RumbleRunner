@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 from telegram import Chat
 
-from base.handler.context.data import Data, CallbackData
+from base.handler.context.data import Data
 from tests.utils import BaseTestCase
 
 
@@ -35,3 +35,19 @@ class TestContextData(BaseTestCase):
         self.assertEqual(data.bot_command, '/command_and_nothing_more')
         self.assertEqual(data.text, None)
         self.assertFalse(data.is_empty)
+
+    def test_usual_message_extraction(self):
+        update = MagicMock()
+        type(update.effective_message).text = '  usual text '
+
+        data = Data(update)
+        self.assertEqual(data.bot_command, None)
+        self.assertEqual(data.text, 'usual text')
+        self.assertFalse(data.is_empty)
+
+    def test_no_message(self):
+        update = MagicMock()
+        type(update).effective_message = None
+        data = Data(update)
+        self.assertEqual(data.bot_command, None)
+        self.assertEqual(data.text, None)
