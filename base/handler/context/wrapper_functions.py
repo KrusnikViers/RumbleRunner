@@ -61,7 +61,6 @@ class WrapperFunctions:
 
     @staticmethod
     def callback(handler_fn: Callable[[Context], Optional[str]], chat_type: ChatType, db: DatabaseConnection,
-                 is_personal: bool,
                  # Up to this point, arguments are predefined by the *Reg function.
                  update: Update, callback_context: CallbackContext):
         is_update_correct = _Filter.is_chat_type_correct(chat_type, update) and \
