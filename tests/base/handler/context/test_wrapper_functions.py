@@ -66,7 +66,7 @@ class TestPendingRequestsDispatching(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
+        type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         WrapperFunctions.pending_action({}, self.connection, update, MagicMock())
 
     def test_dispatching_no_handler(self):
@@ -75,7 +75,7 @@ class TestPendingRequestsDispatching(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
+        type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
             self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
         WrapperFunctions.pending_action({}, self.connection, update, MagicMock())
@@ -87,7 +87,7 @@ class TestPendingRequestsDispatching(InBotTestCase):
         update = MagicMock()
         type(update).effective_user = TgUser(1, 'a', is_bot=False)
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
-        type(update).message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
+        type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
             self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
 

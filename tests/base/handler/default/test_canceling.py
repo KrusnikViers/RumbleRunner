@@ -22,6 +22,7 @@ class TestCancelingHandlers(InBotTestCase):
             type(context).session = session
             type(context).sender = user
             type(context).group_id = None
+            type(context.actions).msg_id = 000
             self.assertTrue(PendingRequests.create(context, PendingRequestType.EXAMPLE_DUMMY_TYPE))
             self.assertIsNotNone(PendingRequests.get(context))
         with ScopedSession(self.connection) as session:
@@ -30,6 +31,7 @@ class TestCancelingHandlers(InBotTestCase):
             type(context).session = session
             type(context).sender = user
             type(context).group_id = None
+            type(context.actions).msg_id = 000
             delete_message_and_pending_request(context)
 
             session.commit()
