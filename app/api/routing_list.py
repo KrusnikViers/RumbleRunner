@@ -1,8 +1,8 @@
 from app.api.command_list import CallbackId, PendingRequestId
-from app.core.handlers.game_ranking import GameRankingHandlers
-from app.core.handlers.game_session import GameSessionHandlers
-from app.core.handlers.matchmaking import MatchmakingHandlers
-from app.core.handlers.player import PlayerHandlers
+from app.handlers.game_ranking import GameRankingHandlers
+from app.handlers.game_session import GameSessionHandlers
+from app.handlers.matchmaking import MatchmakingHandlers
+from app.handlers.player import PlayerHandlers
 from base.api.routing import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg, ChatType
 from base.handler.default import canceling
 
@@ -13,31 +13,32 @@ ROUTING_LIST = [
                        canceling.delete_message_and_pending_request),
 
     # Add your instances of CallbackHandlerReg and CommandHandlerReg in this list to be picked up by the dispatching.
-    CommandHandlerReg(['trueskill'], GameRankingHandlers.main_menu, ChatType.GROUP),
-    CallbackHandlerReg(CallbackId.TS_MAIN_MENU, GameRankingHandlers.main_menu_callback),
-    CallbackHandlerReg(CallbackId.TS_STOP_SESSION, GameRankingHandlers.stop_session),
+    CommandHandlerReg(['trueskill', 'play'], GameRankingHandlers.open_menu, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.TS_RANKING_OPEN_MENU, GameRankingHandlers.open_menu_callback),
+    CallbackHandlerReg(CallbackId.TS_RANKING_STOP_GAME_SESSION, GameRankingHandlers.stop_game_session),
 
-    CallbackHandlerReg(CallbackId.TS_PLAYERS_MENU, PlayerHandlers.players_menu),
-    CallbackHandlerReg(CallbackId.TS_NEW_PLAYER, PlayerHandlers.new_player),
-    PendingRequestHandlerReg(PendingRequestId.TS_NEW_PLAYER_NAME, PlayerHandlers.new_player_name),
-    CallbackHandlerReg(CallbackId.TS_CANCEL_NEW_PLAYER, PlayerHandlers.cancel_new_player),
+    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_OPEN_MENU, PlayerHandlers.management_open_menu),
+    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_START_PLAYER_CREATION, PlayerHandlers.start_player_creation),
+    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_CANCEL_PLAYER_CREATION, PlayerHandlers.cancel_player_creation),
+    PendingRequestHandlerReg(PendingRequestId.TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME,
+                             PlayerHandlers.player_creation_name),
 
-    CallbackHandlerReg(CallbackId.TS_PLAYER_MENU, PlayerHandlers.player_menu),
-    CallbackHandlerReg(CallbackId.TS_RENAME_PLAYER, PlayerHandlers.rename_player),
-    PendingRequestHandlerReg(PendingRequestId.TS_RENAME_PLAYER_NAME, PlayerHandlers.rename_player_name),
-    CallbackHandlerReg(CallbackId.TS_CANCEL_RENAME_PLAYER, PlayerHandlers.cancel_player_rename),
-    CallbackHandlerReg(CallbackId.TS_RESET_SCORE, PlayerHandlers.reset_score),
-    CallbackHandlerReg(CallbackId.TS_DELETE_PLAYER, PlayerHandlers.delete_player),
+    CallbackHandlerReg(CallbackId.TS_PLAYER_OPEN_MENU, PlayerHandlers.open_menu),
+    CallbackHandlerReg(CallbackId.TS_PLAYER_START_RENAMING, PlayerHandlers.start_renaming),
+    CallbackHandlerReg(CallbackId.TS_PLAYER_CANCEL_RENAMING, PlayerHandlers.cancel_renaming),
+    CallbackHandlerReg(CallbackId.TS_PLAYER_RESET_SCORE, PlayerHandlers.reset_score),
+    CallbackHandlerReg(CallbackId.TS_PLAYER_DELETE, PlayerHandlers.delete),
+    PendingRequestHandlerReg(PendingRequestId.TS_PLAYER_RENAMING_NAME, PlayerHandlers.renaming_name),
 
-    CallbackHandlerReg(CallbackId.TS_SESSION_MENU, GameSessionHandlers.session_menu),
-    CallbackHandlerReg(CallbackId.TS_NEW_SESSION, GameSessionHandlers.new_session),
-    CallbackHandlerReg(CallbackId.TS_CHOOSE_PLAYER_FOR_SESSION, GameSessionHandlers.choose_player_for_session),
+    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_OPEN_MENU, GameSessionHandlers.open_menu),
+    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_CREATE_NEW, GameSessionHandlers.create_new),
+    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_CHOOSE_PLAYER, GameSessionHandlers.choose_player),
 
-    CallbackHandlerReg(CallbackId.TS_MATCHMAKING_MENU, MatchmakingHandlers.matchmaking_menu),
-    CallbackHandlerReg(CallbackId.TS_CHOOSE_TEAM_SETUP, MatchmakingHandlers.choose_team_setup),
-    CallbackHandlerReg(CallbackId.TS_CHOOSE_WINNER_TEAM, MatchmakingHandlers.choose_winner_team),
-    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_MENU, MatchmakingHandlers.custom_team_setup_menu),
-    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_CHOOSE_PLAYER,
-                       MatchmakingHandlers.custom_team_setup_choose_player),
-    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_CONFIRM, MatchmakingHandlers.custom_team_setup_confirm),
+    CallbackHandlerReg(CallbackId.TS_MATCH_OPEN_MENU, MatchmakingHandlers.open_menu),
+    CallbackHandlerReg(CallbackId.TS_MATCH_CHOOSE_MATCHUP, MatchmakingHandlers.choose_matchup),
+    CallbackHandlerReg(CallbackId.TS_MATCH_CHOOSE_WINNERS, MatchmakingHandlers.choose_winners),
+    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_OPEN_MENU, MatchmakingHandlers.custom_team_open_menu),
+    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_CHOOSE_PLAYER,
+                       MatchmakingHandlers.custom_team_choose_player),
+    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_CONFIRM, MatchmakingHandlers.custom_team_confirm),
 ]

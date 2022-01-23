@@ -2,7 +2,7 @@ from app.models.all import GameRanking
 from base.api.handler import Context
 
 
-class GameRankingEntity:
+class GameRankingHelpers:
     @staticmethod
     def get_or_create(context: Context) -> GameRanking:
         game_ranking = context.session.query(GameRanking).filter(

@@ -1,23 +1,23 @@
 from sqlalchemy import and_
 
-from app.core.entities.game_ranking import GameRankingEntity
+from app.core.game_ranking import GameRankingHelpers
 from app.models.all import GameSession, Player
 from base.api.handler import Context
 
 
-class GameSessionEntity:
+class GameSessionHelpers:
     @staticmethod
     def get(context: Context) -> GameSession:
-        ranking = GameRankingEntity.get_or_create(context)
+        ranking = GameRankingHelpers.get_or_create(context)
         return context.session.query(GameSession).filter(and_(
             GameSession.is_ongoing == True,
             GameSession.game_ranking_id == ranking.id)).one_or_none()
 
     @staticmethod
     def get_or_create(context: Context):
-        game_session = GameSessionEntity.get(context)
+        game_session = GameSessionHelpers.get(context)
         if game_session is None:
-            ranking = GameRankingEntity.get_or_create(context)
+            ranking = GameRankingHelpers.get_or_create(context)
             game_session = GameSession(is_ongoing=True, game_ranking_id=ranking.id)
             context.session.add(game_session)
             context.session.commit()
@@ -25,7 +25,7 @@ class GameSessionEntity:
 
     @staticmethod
     def stop_current_session(context: Context):
-        current_session = GameSessionEntity.get(context)
+        current_session = GameSessionHelpers.get(context)
         if current_session is not None:
             for player in context.session.query(Player).filter(Player.game_session_id == current_session.id):
                 player.game_session_id = None
@@ -34,7 +34,7 @@ class GameSessionEntity:
 
     @staticmethod
     def text_description(context: Context):
-        current_session = GameSessionEntity.get(context)
+        current_session = GameSessionHelpers.get(context)
         if not current_session:
             return 'All is quiet for now'
         return 'Game session is in progress!\n\nMatches played: {}\nParticipants: {}'.format(

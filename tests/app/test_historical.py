@@ -1,6 +1,6 @@
 import logging
 
-from app.core.rankings.trueskill import DEFAULT_SIGMA, DEFAULT_MU, TSPLayer, Matchup, TSClient
+from app.core.trueskill import TrueSkillParams, TrueSkillPlayer, TrueSkillMatchup, TrueSkillClient
 from app.models.all import Player, GameRanking
 from base.api.database import ScopedSession
 from tests.utils import InBotTestCase
@@ -75,15 +75,15 @@ class TestHistorical(InBotTestCase):
         with ScopedSession(self.connection) as session:
             session.add(GameRanking(id=1, tg_group_id=1))
             for i in range(0, 10):
-                players[i] = Player(id=i, name='Player {}'.format(i), mu=DEFAULT_MU, sigma=DEFAULT_SIGMA,
-                                    game_ranking_id=1)
+                players[i] = Player(id=i, name='Player {}'.format(i), game_ranking_id=1,
+                                    mu=TrueSkillParams.DEFAULT_MU, sigma=TrueSkillParams.DEFAULT_SIGMA)
                 session.add(players[i])
             guessed = 0
             total = 0
             for match in HISTORICAL:
-                matchup = Matchup(
-                    [TSPLayer(players[index]) for index in match.winners],
-                    [TSPLayer(players[index]) for index in match.lost]
+                matchup = TrueSkillMatchup(
+                    [TrueSkillPlayer(players[index]) for index in match.winners],
+                    [TrueSkillPlayer(players[index]) for index in match.lost]
                 )
                 logging.info('Match {}vs{} : Quality {} : Chance {}'.format(
                     len(match.winners), len(match.lost), r_(matchup.quality), r_(matchup.win_chance)))
@@ -91,12 +91,12 @@ class TestHistorical(InBotTestCase):
                     guessed += 1
                 total += 1
 
-                TSClient.update_players_stats(
+                TrueSkillClient.update_players(
                     [players[index] for index in match.winners],
                     [players[index] for index in match.lost]
                 )
             for i, player in players.items():
-                logging.info('{} : {}:{} : {}'.format(
-                    player.name, r_(player.mu), r_(player.sigma), r_(TSClient.expose(player.mu, player.sigma))))
+                logging.info('{} : {}:{}'.format(
+                    player.name, r_(player.mu), r_(player.sigma)))
             logging.info('Guessing: {}'.format(r_(guessed / total)))
-        self.assertGreater(guessed / total, 0.65)
+            self.assertGreater(guessed / total, 0.65)
