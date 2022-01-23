@@ -1,5 +1,4 @@
 from app.api.command_list import CallbackId
-from app.core.entities.game_ranking import GameRankingEntity
 from app.core.entities.game_session import GameSessionEntity
 from app.core.entities.player import PlayerEntity
 from app.models.all import Player
@@ -11,7 +10,7 @@ class GameSessionHandlers:
     def build_main_menu(context: Context) -> InlineMenu:
         menu = list()
         game_session = GameSessionEntity.get_or_create(context)
-        players = PlayerEntity.get_for_ranking(context, GameRankingEntity.get_or_create(context))
+        players = PlayerEntity.get_for_ranking(context)
         for player in players:
             text_template = '✅ {} (remove)' if player.game_session_id == game_session.id else '⛔ {} (add)'
             menu.append([

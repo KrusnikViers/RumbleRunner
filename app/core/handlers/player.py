@@ -12,7 +12,7 @@ class PlayerHandlers:
     def build_players_menu(context: Context):
         menu = []
         game_ranking = GameRankingEntity.get_or_create(context)
-        players = PlayerEntity.get_for_ranking(context, game_ranking)
+        players = PlayerEntity.get_for_ranking(context)
         for player in players:
             menu.append([InlineMenuButton(player.name, CallbackId.TS_PLAYER_MENU, player.id)])
         menu.append([InlineMenuButton('New player..', CallbackId.TS_NEW_PLAYER)])

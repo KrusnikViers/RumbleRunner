@@ -1,7 +1,6 @@
 from app.api.command_list import CallbackId
 from app.core.entities.game_ranking import GameRankingEntity
 from app.core.entities.game_session import GameSessionEntity
-from app.core.entities.player import PlayerEntity
 from base.api.handler import Context, InlineMenu, InlineMenuButton
 
 
@@ -11,7 +10,7 @@ class GameRankingHandlers:
         menu = list()
         existing_session = GameSessionEntity.get(context)
         if existing_session is not None:
-            menu.append([InlineMenuButton('Start new match!', CallbackId.TS_MATCH_MENU)])
+            menu.append([InlineMenuButton('Start new match!', CallbackId.TS_MATCHMAKING_MENU)])
             menu.append([InlineMenuButton('Edit session..', CallbackId.TS_SESSION_MENU, existing_session.id),
                          InlineMenuButton('Stop session', CallbackId.TS_STOP_SESSION, existing_session.id)])
         menu.append([InlineMenuButton('Start new session..', CallbackId.TS_NEW_SESSION)])

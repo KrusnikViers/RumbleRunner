@@ -1,6 +1,7 @@
 from app.api.command_list import CallbackId, PendingRequestId
 from app.core.handlers.game_ranking import GameRankingHandlers
 from app.core.handlers.game_session import GameSessionHandlers
+from app.core.handlers.matchmaking import MatchmakingHandlers
 from app.core.handlers.player import PlayerHandlers
 from base.api.routing import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg, ChatType
 from base.handler.default import canceling
@@ -31,4 +32,12 @@ ROUTING_LIST = [
     CallbackHandlerReg(CallbackId.TS_SESSION_MENU, GameSessionHandlers.session_menu),
     CallbackHandlerReg(CallbackId.TS_NEW_SESSION, GameSessionHandlers.new_session),
     CallbackHandlerReg(CallbackId.TS_CHOOSE_PLAYER_FOR_SESSION, GameSessionHandlers.choose_player_for_session),
+
+    CallbackHandlerReg(CallbackId.TS_MATCHMAKING_MENU, MatchmakingHandlers.matchmaking_menu),
+    CallbackHandlerReg(CallbackId.TS_CHOOSE_TEAM_SETUP, MatchmakingHandlers.choose_team_setup),
+    CallbackHandlerReg(CallbackId.TS_CHOOSE_WINNER_TEAM, MatchmakingHandlers.choose_winner_team),
+    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_MENU, MatchmakingHandlers.custom_team_setup_menu),
+    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_CHOOSE_PLAYER,
+                       MatchmakingHandlers.custom_team_setup_choose_player),
+    CallbackHandlerReg(CallbackId.TS_CUSTOM_TEAM_SETUP_CONFIRM, MatchmakingHandlers.custom_team_setup_confirm),
 ]
