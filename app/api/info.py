@@ -5,7 +5,7 @@ import pathlib
 APP_DIR: pathlib.Path = pathlib.Path(os.path.realpath(__file__)).parent.parent.resolve()
 ROOT_DIR: pathlib.Path = APP_DIR.parent.resolve()
 
-DEFAULT_DB_PATH: pathlib.Path = ROOT_DIR.joinpath('/build/storage.db').resolve()
+DEFAULT_DB_PATH: pathlib.Path = ROOT_DIR.joinpath('/build').resolve()
 DEFAULT_CONFIG_PATH: pathlib.Path = ROOT_DIR.joinpath('configuration.ini').resolve()
 
 PROJECT_NAME: str = 'RumbleRunner'

@@ -42,7 +42,7 @@ Path to db directory is optional.
 ```
 docker run --restart always --name <instance name> -d \
  -v <path to configuration>:/instance/configuration.ini \
- -v <path to the db directory>:/instance/storage \
+ -v <path to the db directory>:/build \
  <docker image name>
 ```
 
