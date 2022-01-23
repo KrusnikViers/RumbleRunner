@@ -1,4 +1,4 @@
-name: Python unit-tests
+name: Test, build and publish
 
 on:
   push:
@@ -43,6 +43,7 @@ jobs:
         uses: codecov/codecov-action@v2
 
   build:
+    needs: [lint, test]
     runs-on: ubuntu-latest
     name: Build and Publish
 

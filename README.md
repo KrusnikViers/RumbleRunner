@@ -1,10 +1,10 @@
 # TgBotTemplate
 
 <!--
-[![Build Status](https://travis-ci.org/KrusnikViers/TgBotTemplate.svg)](https://travis-ci.org/KrusnikViers/TgBotTemplate)
-[![Build status](https://ci.appveyor.com/api/projects/status/6uaw3t0aevq62ydp?svg=true)](https://ci.appveyor.com/project/KrusnikViers/tgbottemplate)
-[![Coverage - Codecov](https://codecov.io/gh/KrusnikViers/TgBotTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/KrusnikViers/TgBotTemplate)
-[![Maintainability](https://api.codeclimate.com/v1/badges/11bbbf9259251bdcada3/maintainability)](https://codeclimate.com/github/KrusnikViers/TgBotTemplate/maintainability)
+[![Docker Pulls](https://img.shields.io/docker/pulls/viers/rumblerunner.svg)](https://hub.docker.com/r/viers/rumblerunner/)
+[![Build and publish](https://github.com/KrusnikViers/RumbleRunner/actions/workflows/github-actions.yml/badge.svg)](https://github.com/KrusnikViers/RumbleRunner/actions/)
+[![Coverage - Codecov](https://codecov.io/gh/KrusnikViers/RumbleRunner/branch/master/graph/badge.svg)](https://codecov.io/gh/KrusnikViers/RumbleRunner)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ea5b891843b7f3655b71/maintainability)](https://codeclimate.com/github/KrusnikViers/RumbleRunner/maintainability)
 -->
 
 ## Before the start
