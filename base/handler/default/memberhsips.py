@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy import and_
 
 from base.database.helpers import DBHelpers
-from base.handler.context.context import Context
+from base.handler.wrapper.context import Context
 from base.models.all import TelegramUser, TelegramGroup, TelegramUserInGroup
 
 

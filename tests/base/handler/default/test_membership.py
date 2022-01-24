@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from telegram import User as TgUser, Chat as TgChat, Message, Update
 
 from base.database.scoped_session import ScopedSession
-from base.handler.context.context import Context
+from base.handler.wrapper.context import Context
 from base.handler.default.memberhsips import Memberships
 from base.models.all import TelegramUser, TelegramGroup, TelegramUserInGroup
 from tests.utils import InBotTestCase

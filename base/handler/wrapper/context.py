@@ -8,8 +8,8 @@ from telegram.ext import CallbackContext
 from base.database.connection import DatabaseConnection
 from base.database.helpers import DBHelpers
 from base.database.scoped_session import ScopedSession
-from base.handler.context.actions import Actions
-from base.handler.context.data import Data
+from base.handler.wrapper.actions import Actions
+from base.handler.wrapper.data import Data
 from base.models.all import TelegramUser, TelegramGroup, TelegramUserRequest
 
 RawContextData = namedtuple('RawData', ['update', 'callback_context'])

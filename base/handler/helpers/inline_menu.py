@@ -2,7 +2,7 @@ from typing import Optional, List, Union
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from base.handler.context.data import CallbackData
+from base.handler.wrapper.data import CallbackData
 
 
 class InlineMenuButton:

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from telegram import Bot, Update
 
 from app.api.config import Config
-from base.handler.context.context import Context
+from base.handler.wrapper.context import Context
 from base.models.all import TelegramUser
 
 

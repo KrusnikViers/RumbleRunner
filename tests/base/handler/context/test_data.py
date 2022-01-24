@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, PropertyMock
 from telegram import Chat
 
 from app.api.command_list import CallbackId
-from base.handler.context.data import Data, CallbackData
+from base.handler.wrapper.data import Data, CallbackData
 from tests.utils import BaseTestCase
 
 

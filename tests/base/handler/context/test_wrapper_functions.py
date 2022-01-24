@@ -4,10 +4,10 @@ from telegram import Chat, User as TgUser, Message as TgMessage
 
 from app.api.command_list import PendingRequestId
 from base.database.scoped_session import ScopedSession
-from base.handler.context.context import Context
-from base.handler.context.wrapper_functions import WrapperFunctions
+from base.handler.wrapper.context import Context
+from base.handler.wrapper.functions import WrapperFunctions
 from base.models.all import TelegramUser
-from base.routing.pending_requests import PendingRequests
+from base.handler.wrapper.requests import Requests
 from base.routing.registration import ChatType
 from tests.utils import InBotTestCase
 
@@ -56,7 +56,7 @@ class TestWrapperFunctions(InBotTestCase):
         callable_fn.assert_not_called()
 
 
-class TestPendingRequestsDispatching(InBotTestCase):
+class TestRequestsDispatching(InBotTestCase):
     def test_dispatching_no_sender(self):
         WrapperFunctions.pending_action({}, self.connection, MagicMock(), MagicMock())
 
@@ -77,7 +77,7 @@ class TestPendingRequestsDispatching(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(Requests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
         WrapperFunctions.pending_action({}, self.connection, update, MagicMock())
 
     def test_dispatching_ok(self):
@@ -89,7 +89,7 @@ class TestPendingRequestsDispatching(InBotTestCase):
         type(update.effective_chat).type = PropertyMock(return_value=Chat.PRIVATE)
         type(update).effective_message = TgMessage(000, MagicMock(), MagicMock(), text='test_message')
         with Context(update, MagicMock(), self.connection) as context:
-            self.assertTrue(PendingRequests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
+            self.assertTrue(Requests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
 
         WrapperFunctions.pending_action({PendingRequestId.EXAMPLE_DUMMY_TYPE: callable_fn},
                                         self.connection, update, MagicMock())

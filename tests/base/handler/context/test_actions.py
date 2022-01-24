@@ -1,7 +1,7 @@
 from telegram import TelegramError, Message, Chat
 
 from unittest.mock import MagicMock
-from base.handler.context.actions import Actions, ScopedIgnoreTelegramErrors
+from base.handler.wrapper.actions import Actions, ScopedIgnoreTelegramErrors
 from tests.utils import BaseTestCase
 
 

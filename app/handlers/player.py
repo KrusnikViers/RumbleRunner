@@ -4,7 +4,7 @@ from app.core.player import PlayerHelpers
 from app.core.trueskill import TrueSkillParams
 from app.models.all import Player
 from base.api.handler import Context, InlineMenu, InlineMenuButton
-from base.api.routing import PendingRequests
+from base.api.routing import Requests
 
 
 class PlayerHandlers:
@@ -37,7 +37,7 @@ class PlayerHandlers:
 
     @staticmethod
     def start_player_creation(context: Context):
-        PendingRequests.replace(context, PendingRequestId.TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME)
+        Requests.replace(context, PendingRequestId.TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME)
         context.actions.edit_message('Write name for the new player')
         context.actions.edit_markup(
             InlineMenu([[InlineMenuButton('Cancel', CallbackId.TS_PLAYERS_MANAGEMENT_CANCEL_PLAYER_CREATION)]],
@@ -58,7 +58,7 @@ class PlayerHandlers:
 
     @staticmethod
     def cancel_player_creation(context: Context):
-        pending_request = PendingRequests.get(context)
+        pending_request = Requests.get(context)
         if pending_request:
             context.session.delete(pending_request)
         PlayerHandlers.management_open_menu(context)
@@ -81,7 +81,7 @@ class PlayerHandlers:
     def start_renaming(context: Context):
         player = context.session.query(Player).filter(Player.id == context.data.callback_data.data).one_or_none()
         if player:
-            PendingRequests.replace(context, PendingRequestId.TS_PLAYER_RENAMING_NAME, str(player.id))
+            Requests.replace(context, PendingRequestId.TS_PLAYER_RENAMING_NAME, str(player.id))
             context.actions.edit_message('Write new name for the {}:'.format(player.name))
             context.actions.edit_markup(InlineMenu([[InlineMenuButton('Cancel', CallbackId.TS_CANCEL_PLAYER_RENAMING)]],
                                                    user_tg_id=context.sender.tg_id))
@@ -104,7 +104,7 @@ class PlayerHandlers:
 
     @staticmethod
     def cancel_renaming(context: Context):
-        pending_request = PendingRequests.get(context)
+        pending_request = Requests.get(context)
         player_id = context.pending_request.additional_data
         if pending_request:
             context.session.delete(pending_request)

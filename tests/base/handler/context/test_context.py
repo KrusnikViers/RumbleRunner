@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 from telegram import Chat
 
-from base.handler.context import context
+from base.handler.wrapper import context
 from tests.utils import InBotTestCase
 
 

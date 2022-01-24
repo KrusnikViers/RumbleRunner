@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, PropertyMock
 
-from base.handler.context.wrapper_functions import WrapperFunctions
+from base.handler.wrapper.functions import WrapperFunctions
 from base.handler.default.reporting import ReportsSender
 from tests.utils import InBotTestCase
 

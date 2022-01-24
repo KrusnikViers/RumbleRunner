@@ -5,7 +5,7 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, \
     Updater, Filters as TgFilters
 
 from base.database.connection import DatabaseConnection
-from base.handler.context.wrapper_functions import WrapperFunctions
+from base.handler.wrapper.functions import WrapperFunctions
 from base.handler.default.memberhsips import Memberships
 from base.routing.registration import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg
 

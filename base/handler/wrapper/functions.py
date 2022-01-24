@@ -7,11 +7,11 @@ from telegram.ext import CallbackContext
 from app.api.command_list import PendingRequestId
 from base.database.connection import DatabaseConnection
 from base.database.scoped_session import ScopedSession
-from base.handler.context.context import Context
-from base.handler.context.data import CallbackData
+from base.handler.wrapper.context import Context
+from base.handler.wrapper.data import CallbackData
 from base.handler.default.memberhsips import Memberships
 from base.handler.default.reporting import ReportsSender
-from base.routing.pending_requests import PendingRequests
+from base.handler.wrapper.requests import Requests
 from base.routing.registration import ChatType
 
 
@@ -92,7 +92,7 @@ class WrapperFunctions:
 
                 if not context.sender or not context.data.text:
                     return
-                request = PendingRequests.get(context)
+                request = Requests.get(context)
                 if request is None:
                     return
                 try:
