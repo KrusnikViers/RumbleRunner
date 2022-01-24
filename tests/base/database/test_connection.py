@@ -1,11 +1,10 @@
-from app.api.config import Config
 from base.database.connection import DatabaseConnection
-from tests.utils import BaseTestCase
+from tests.utils import BaseTestCase, TEST_DATA_TMP_DIR
 
 
 class TestConnection(BaseTestCase):
-    def test_db_url(self):
-        config = Config('', '', '/some/test/path')
-        self.assertEqual(DatabaseConnection.create_database_url(config, for_tests=True), "sqlite://")
-        self.assertEqual(DatabaseConnection.create_database_url(config, for_tests=False),
-                         "sqlite:////some/test/path/storage.db")
+    def test_create_new_db_connection(self):
+        connection = DatabaseConnection.create(str(TEST_DATA_TMP_DIR))
+        self.assertEqual(connection.engine.name, 'sqlite')
+        self.assertTrue(str(connection.engine.url).endswith('tmp/storage.db'))
+        TEST_DATA_TMP_DIR.joinpath('storage.db').unlink()

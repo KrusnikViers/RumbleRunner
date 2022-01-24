@@ -2,15 +2,14 @@ import pathlib
 import sys
 
 from app.api.config import Config
-from app.api.info import ROOT_DIR
-from tests.utils import BaseTestCase
+from tests.utils import BaseTestCase, TEST_DATA_DIR
 
 
 class TestConfig(BaseTestCase):
     def test_parsing(self):
         old_argv = sys.argv
-        sys.argv = ['script_path', '--config', str(ROOT_DIR.joinpath('tests', 'test_data', 'example_config.ini'))]
-        parsed_config = Config.get()
+        sys.argv = ['script_path', '--config', str(TEST_DATA_DIR.joinpath('example_config.ini'))]
+        parsed_config = Config.create()
         sys.argv = old_argv
 
         self.assertEqual(parsed_config.bot_token, 'aaaa:bbbb')

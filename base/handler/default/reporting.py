@@ -5,7 +5,6 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from telegram import Bot, Update
 
-from app.api.config import Config
 from base.handler.wrapper.context import Context
 from base.models.all import TelegramUser
 
@@ -14,9 +13,9 @@ class ReportsSender:
     # Global instance, being initialized by the main bot class.
     instance = None
 
-    def __init__(self, bot: Bot, configuration: Config):
+    def __init__(self, bot: Bot, admin_username: str):
         self.bot = bot
-        self.admin_username = configuration.admin_username
+        self.admin_username = admin_username
 
     @classmethod
     def _find_superuser(cls, session) -> Optional[TelegramUser]:

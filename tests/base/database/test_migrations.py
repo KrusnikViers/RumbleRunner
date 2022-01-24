@@ -17,11 +17,6 @@ class PrintSuppressor:
 
 
 class TestMigrations(InBotTestCase):
-    def test_connection(self):
-        self.assertIsNotNone(self.connection.engine)
-        with self.connection.engine.connect():
-            pass
-
     def test_nothing_more_to_migrate(self):
         migrations_dir = APP_DIR.joinpath('migrations')
 

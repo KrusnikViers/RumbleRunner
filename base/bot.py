@@ -24,11 +24,11 @@ class Bot:
     def run(self):
         Bot.set_logging_format()
 
-        self.configuration = Config.get()
+        self.configuration = Config.create()
         self.updater = Updater(token=self.configuration.bot_token)
-        self.database_connection = DatabaseConnection(self.configuration)
+        self.database_connection = DatabaseConnection.create(self.configuration.storage_dir)
         self.dispatcher = Dispatcher(self.updater, self.database_connection, ROUTING_LIST)
-        ReportsSender.instance = ReportsSender(self.updater.bot, self.configuration)
+        ReportsSender.instance = ReportsSender(self.updater.bot, self.configuration.admin_username)
 
         logging.info('Launching bot: ' + str(self.updater.bot.get_me()))
         self.updater.start_polling()

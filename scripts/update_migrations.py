@@ -9,7 +9,7 @@ Bot.set_logging_format()
 # Make sure that:
 # - directory app/storage/migrations/versions exists
 # - db_path directory exists as well
-config = Config.get()
-connection = DatabaseConnection(config)
+config = Config.create()
+connection = DatabaseConnection.create(config.storage_dir)
 migration_engine = MigrationEngine(connection.engine)
 migration_engine.make_migrations()

@@ -1,7 +1,6 @@
 import logging
-from typing import Optional
 
-from sqlalchemy.engine import create_engine
+from sqlalchemy.engine import create_engine, Engine
 from sqlalchemy.orm import sessionmaker
 
 from app.api.config import Config
@@ -9,17 +8,24 @@ from base.database.alembic.migrations import MigrationEngine
 
 
 class DatabaseConnection:
-    def __init__(self, configuration: Optional[Config], for_tests: bool = False):
-        assert Config is not None or for_tests
-        url = self.create_database_url(configuration, for_tests)
-        logging.info("Database path set to {}".format(url))
-        self.engine = create_engine(url)
+    def __init__(self, engine: Engine):
+        self.engine = engine
         self.make_session = sessionmaker(bind=self.engine)
-        logging.info('Running pending migrations')
-        MigrationEngine(self.engine).run_migrations()
 
     @staticmethod
-    def create_database_url(configuration: Optional[Config], for_tests: bool):
-        if for_tests:
-            return 'sqlite://'
-        return "sqlite:///{}/storage.db".format(configuration.storage_dir)
+    def create(storage_dir: str) -> 'DatabaseConnection':
+        url = "sqlite:///{}/storage.db".format(storage_dir)
+        return DatabaseConnection._create_from_url(url)
+
+    @staticmethod
+    def create_for_tests() -> 'DatabaseConnection':
+        return DatabaseConnection._create_from_url('sqlite://')
+
+    # Private methods
+    @staticmethod
+    def _create_from_url(db_url: str) -> 'DatabaseConnection':
+        logging.info("Database path set to {}".format(db_url))
+        engine = create_engine(db_url)
+        logging.info('Running pending migrations')
+        MigrationEngine(engine).run_migrations()
+        return DatabaseConnection(engine)
