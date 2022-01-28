@@ -1,8 +1,7 @@
-from app.api.command_list import CallbackId
-from app.core.game_session import GameSessionHelpers
-from app.core.player import PlayerHelpers
+from app.api import CallbackId
+from app.core import PlayerHelpers, GameSessionHelpers
 from app.models import Player
-from base import SessionScope, Context, InlineMenu, InlineMenuButton, Actions
+from base import SessionScope, Context, InlineMenu, InlineMenuButton
 
 
 class GameSessionHandlers:
@@ -21,8 +20,8 @@ class GameSessionHandlers:
 
     @staticmethod
     def open_menu(context: Context):
-        Actions.edit_message(GameSessionHelpers.text_description(context), message=context.message)
-        Actions.edit_markup(GameSessionHandlers._build_menu_markup(context), message=context.message)
+        context.edit_message(GameSessionHelpers.text_description(context))
+        context.edit_markup(GameSessionHandlers._build_menu_markup(context))
 
     @staticmethod
     def create_new(context: Context):

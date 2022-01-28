@@ -39,8 +39,8 @@ class Actions:
 
     @staticmethod
     @_TelegramErrorsCatchScope.return_status
-    def edit_message(new_message: str, chat_id: int, message_id: int):
-        BotScope.bot().edit_message_text(new_message, chat_id=chat_id, message_id=message_id)
+    def edit_message(new_message: str, chat_id: int, message_id: int, **kwargs):
+        BotScope.bot().edit_message_text(new_message, chat_id=chat_id, message_id=message_id, **kwargs)
 
     @staticmethod
     @_TelegramErrorsCatchScope.return_status

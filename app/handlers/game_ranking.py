@@ -1,6 +1,6 @@
 from app.api import CallbackId
-from app.core.game_session import GameSessionHelpers
-from base import Context, InlineMenu, InlineMenuButton, Actions
+from app.core import GameSessionHelpers
+from base import Context, InlineMenu, InlineMenuButton
 
 
 class GameRankingHandlers:
@@ -26,14 +26,13 @@ class GameRankingHandlers:
 
     @staticmethod
     def open_menu(context: Context):
-        Actions.send_message(GameRankingHandlers._build_menu_title(context),
-                             reply_markup=GameRankingHandlers._build_menu_markup(context),
-                             message=context.message)
+        context.send_message(GameRankingHandlers._build_menu_title(context),
+                             reply_markup=GameRankingHandlers._build_menu_markup(context))
 
     @staticmethod
     def open_menu_callback(context: Context):
-        Actions.edit_message(GameRankingHandlers._build_menu_title(context), message=context.message)
-        Actions.edit_markup(GameRankingHandlers._build_menu_markup(context), message=context.message)
+        context.edit_message(GameRankingHandlers._build_menu_title(context))
+        context.edit_markup(GameRankingHandlers._build_menu_markup(context))
 
     @staticmethod
     def stop_game_session(context: Context):

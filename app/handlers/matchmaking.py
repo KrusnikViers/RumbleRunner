@@ -1,7 +1,5 @@
-from app.api.command_list import CallbackId
-from app.core.game_session import GameSessionHelpers
-from app.core.player import PlayerHelpers
-from app.core.trueskill import TrueSkillClient, TrueSkillMatchup
+from app.api import CallbackId
+from app.core import GameSessionHelpers, PlayerHelpers, TrueSkillMatchup, TrueSkillClient
 from app.models import Participation
 from base import SessionScope, Context, InlineMenu, InlineMenuButton, Actions
 
@@ -73,11 +71,10 @@ class MatchmakingHandlers:
     def open_menu(context: Context):
         game_session = GameSessionHelpers.get(context)
         if len(PlayerHelpers.get_for_session(context)) < 2:
-            Actions.edit_message('Not enough players in session!', message=context.message)
+            context.edit_message('Not enough players in session!')
         else:
-            Actions.edit_message('Choose your destiny!\nMatch #{}'.format(game_session.matches_played),
-                                 message=context.message)
-        Actions.edit_markup(MatchmakingHandlers._build_menu_markup(context), message=context.message)
+            context.edit_message('Choose your destiny!\nMatch #{}'.format(game_session.matches_played))
+        context.edit_markup(MatchmakingHandlers._build_menu_markup(context))
 
     @staticmethod
     def choose_matchup(context: Context):
@@ -90,8 +87,8 @@ class MatchmakingHandlers:
                               MatchmakingHandlers._encode_teams(team_2, team_1))],
             [InlineMenuButton('Back', CallbackId.TS_MATCH_OPEN_MENU)]
         ], user_tg_id=context.sender.tg_id)
-        Actions.edit_message('Choose the winners:', message=context.message)
-        Actions.edit_markup(menu, message=context.message)
+        context.edit_message('Choose the winners:')
+        context.edit_markup(menu)
 
     @staticmethod
     def choose_winners(context: Context):
@@ -122,8 +119,8 @@ class MatchmakingHandlers:
 
         menu.append([InlineMenuButton('Confirm', CallbackId.TS_MATCH_CUSTOM_TEAM_CONFIRM, winners_list)])
         menu.append([InlineMenuButton('Cancel', CallbackId.TS_MATCH_OPEN_MENU)])
-        Actions.edit_message('Choose your winners:', message=context.message)
-        Actions.edit_markup(InlineMenu(menu, user_tg_id=context.sender.tg_id), message=context.message)
+        context.edit_message('Choose your winners:')
+        context.edit_markup(InlineMenu(menu, user_tg_id=context.sender.tg_id))
 
     @staticmethod
     def custom_team_choose_player(context: Context):

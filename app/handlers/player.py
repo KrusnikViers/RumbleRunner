@@ -1,7 +1,5 @@
-from app.api.command_list import CallbackId, PendingRequestId
-from app.core.game_ranking import GameRankingHelpers
-from app.core.player import PlayerHelpers
-from app.core.trueskill import TrueSkillParams
+from app.api import CallbackId, PendingRequestId
+from app.core import GameRankingHelpers, PlayerHelpers, TrueSkillParams
 from app.models import Player
 from base import SessionScope, Context, InlineMenu, InlineMenuButton, Actions, Requests
 
@@ -30,14 +28,14 @@ class PlayerHandlers:
 
     @staticmethod
     def management_open_menu(context: Context):
-        Actions.edit_message('Our heroes:')
-        Actions.edit_markup(PlayerHandlers.build_players_menu(context))
+        context.edit_message('Our heroes:')
+        context.edit_markup(PlayerHandlers.build_players_menu(context))
 
     @staticmethod
     def start_player_creation(context: Context):
         Requests.replace(context, PendingRequestId.TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME)
-        Actions.edit_message('Write name for the new player')
-        Actions.edit_markup(
+        context.edit_message('Write name for the new player')
+        context.edit_markup(
             InlineMenu([[InlineMenuButton('Cancel', CallbackId.TS_PLAYERS_MANAGEMENT_CANCEL_PLAYER_CREATION)]],
                        user_tg_id=context.sender.tg_id))
 
@@ -51,7 +49,8 @@ class PlayerHandlers:
             Player(name=new_name, mu=TrueSkillParams.DEFAULT_MU, sigma=TrueSkillParams.DEFAULT_SIGMA,
                    game_ranking_id=game_ranking.id))
         SessionScope.commit()
-        Actions.msg_id = context.request.original_message_id
+        # TODO: Fix
+        context.msg_id = context.request.original_message_id
         SessionScope.session().delete(context.request)
         PlayerHandlers.management_open_menu(context)
 
@@ -72,20 +71,20 @@ class PlayerHandlers:
             return
 
         skill_confidence = 1.0 - player.sigma / (TrueSkillParams.DEFAULT_SIGMA * 2)
-        Actions.edit_message('Howdy, {}?\n\nMatches played: {}\nSkill confidence: {}%'.format(
-            player.name, len(player.participations), int(skill_confidence * 100.0)), message=context.message)
-        Actions.edit_markup(PlayerHandlers.build_player_menu(context, player_id), message=context.message)
+        context.edit_message('Howdy, {}?\n\nMatches played: {}\nSkill confidence: {}%'.format(
+            player.name, len(player.participations), int(skill_confidence * 100.0)))
+        context.edit_markup(PlayerHandlers.build_player_menu(context, player_id))
 
     @staticmethod
     def start_renaming(context: Context):
         player = SessionScope.session().query(Player).filter(Player.id == context.data.callback_data.data).one_or_none()
         if player:
             Requests.replace(context, PendingRequestId.TS_PLAYER_RENAMING_NAME, str(player.id))
-            Actions.edit_message('Write new name for the {}:'.format(player.name), message=context.message)
-            Actions.edit_markup(InlineMenu([[InlineMenuButton('Cancel', CallbackId.TS_CANCEL_PLAYER_RENAMING)]],
-                                           user_tg_id=context.sender.tg_id), message=context.message)
+            context.edit_message('Write new name for the {}:'.format(player.name))
+            context.edit_markup(InlineMenu([[InlineMenuButton('Cancel', CallbackId.TS_CANCEL_PLAYER_RENAMING)]],
+                                           user_tg_id=context.sender.tg_id))
         else:
-            Actions.edit_markup(PlayerHandlers.open_menu(context), message=context.message)
+            context.edit_markup(PlayerHandlers.open_menu(context))
 
     @staticmethod
     def renaming_name(context: Context):
@@ -97,7 +96,7 @@ class PlayerHandlers:
         if player:
             player.name = new_name
             SessionScope.commit()
-        Actions.msg_id = context.request.original_message_id
+        context.msg_id = context.request.original_message_id
         SessionScope.session().delete(context.request)
         PlayerHandlers.open_menu(context, player_id)
 

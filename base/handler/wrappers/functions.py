@@ -99,6 +99,6 @@ class WrapperFunctions:
                         return
 
                     if (answer := handlers_dict[request_type](context)) is not None:
-                        Actions.send_message(answer, message=context.message)
+                        context.send_message(answer)
                 except Exception:
                     ReportsSender.report_exception(update)
