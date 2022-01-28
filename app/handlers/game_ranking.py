@@ -1,7 +1,6 @@
 from app.api.command_list import CallbackId
-from app.core.game_ranking import GameRankingHelpers
 from app.core.game_session import GameSessionHelpers
-from base.api.handler import Context, InlineMenu, InlineMenuButton
+from base.api.handler import Context, InlineMenu, InlineMenuButton, Actions
 
 
 class GameRankingHandlers:
@@ -22,20 +21,19 @@ class GameRankingHandlers:
 
     @staticmethod
     def _build_menu_title(context: Context) -> str:
-        message = 'Let\'s rumble!'
-        ranking = GameRankingHelpers.get_or_create(context)
-        message += '\n\n' + GameSessionHelpers.text_description(context)
+        message = 'Let\'s rumble!\n\n' + GameSessionHelpers.text_description(context)
         return message
 
     @staticmethod
     def open_menu(context: Context):
-        context.actions.send_message(GameRankingHandlers._build_menu_title(context),
-                                     reply_markup=GameRankingHandlers._build_menu_markup(context))
+        Actions.send_message(GameRankingHandlers._build_menu_title(context),
+                             reply_markup=GameRankingHandlers._build_menu_markup(context),
+                             message=context.message)
 
     @staticmethod
     def open_menu_callback(context: Context):
-        context.actions.edit_message(GameRankingHandlers._build_menu_title(context))
-        context.actions.edit_markup(GameRankingHandlers._build_menu_markup(context))
+        Actions.edit_message(GameRankingHandlers._build_menu_title(context), message=context.message)
+        Actions.edit_markup(GameRankingHandlers._build_menu_markup(context), message=context.message)
 
     @staticmethod
     def stop_game_session(context: Context):

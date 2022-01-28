@@ -3,7 +3,8 @@ from app.core.game_session import GameSessionHelpers
 from app.core.player import PlayerHelpers
 from app.core.trueskill import TrueSkillClient, TrueSkillMatchup
 from app.models.all import Participation
-from base.api.handler import Context, InlineMenu, InlineMenuButton
+from base.api.database import SessionScope
+from base.api.handler import Context, InlineMenu, InlineMenuButton, Actions
 
 
 class MatchmakingHandlers:
@@ -13,13 +14,13 @@ class MatchmakingHandlers:
         players = PlayerHelpers.get_id_map_for_session(context)
 
         for player_id in team_won:
-            context.session.add(Participation(is_winner=True, player_id=player_id,
-                                              game_session_id=current_session.id,
-                                              match_number=current_session.matches_played))
+            SessionScope.session().add(Participation(is_winner=True, player_id=player_id,
+                                                     game_session_id=current_session.id,
+                                                     match_number=current_session.matches_played))
         for player_id in team_lost:
-            context.session.add(Participation(is_winner=False, player_id=player_id,
-                                              game_session_id=current_session.id,
-                                              match_number=current_session.matches_played))
+            SessionScope.session().add(Participation(is_winner=False, player_id=player_id,
+                                                     game_session_id=current_session.id,
+                                                     match_number=current_session.matches_played))
         current_session.matches_played += 1
 
         TrueSkillClient.update_players([players[player_id] for player_id in team_won],
@@ -73,15 +74,16 @@ class MatchmakingHandlers:
     def open_menu(context: Context):
         game_session = GameSessionHelpers.get(context)
         if len(PlayerHelpers.get_for_session(context)) < 2:
-            context.actions.edit_message('Not enough players in session!')
+            Actions.edit_message('Not enough players in session!', message=context.message)
         else:
-            context.actions.edit_message('Choose your destiny!\nMatch #{}'.format(game_session.matches_played))
-        context.actions.edit_markup(MatchmakingHandlers._build_menu_markup(context))
+            Actions.edit_message('Choose your destiny!\nMatch #{}'.format(game_session.matches_played),
+                                 message=context.message)
+        Actions.edit_markup(MatchmakingHandlers._build_menu_markup(context), message=context.message)
 
     @staticmethod
     def choose_matchup(context: Context):
         players = PlayerHelpers.get_id_map_for_session(context)
-        team_1, team_2 = MatchmakingHandlers._decode_teams(context.data.callback_data.data)
+        team_1, team_2 = MatchmakingHandlers._decode_teams(context.message.data)
         menu = InlineMenu([
             [InlineMenuButton(', '.join([players[id].name for id in team_1]), CallbackId.TS_MATCH_CHOOSE_WINNERS,
                               MatchmakingHandlers._encode_teams(team_1, team_2))],
@@ -89,12 +91,12 @@ class MatchmakingHandlers:
                               MatchmakingHandlers._encode_teams(team_2, team_1))],
             [InlineMenuButton('Back', CallbackId.TS_MATCH_OPEN_MENU)]
         ], user_tg_id=context.sender.tg_id)
-        context.actions.edit_message('Choose the winners:')
-        context.actions.edit_markup(menu)
+        Actions.edit_message('Choose the winners:', message=context.message)
+        Actions.edit_markup(menu, message=context.message)
 
     @staticmethod
     def choose_winners(context: Context):
-        team_won, team_lost = MatchmakingHandlers._decode_teams(context.data.callback_data.data)
+        team_won, team_lost = MatchmakingHandlers._decode_teams(context.message.data)
         MatchmakingHandlers._update_players(context, team_won, team_lost)
         MatchmakingHandlers.open_menu(context)
 
@@ -121,17 +123,17 @@ class MatchmakingHandlers:
 
         menu.append([InlineMenuButton('Confirm', CallbackId.TS_MATCH_CUSTOM_TEAM_CONFIRM, winners_list)])
         menu.append([InlineMenuButton('Cancel', CallbackId.TS_MATCH_OPEN_MENU)])
-        context.actions.edit_message('Choose your winners:')
-        context.actions.edit_markup(InlineMenu(menu, user_tg_id=context.sender.tg_id))
+        Actions.edit_message('Choose your winners:', message=context.message)
+        Actions.edit_markup(InlineMenu(menu, user_tg_id=context.sender.tg_id), message=context.message)
 
     @staticmethod
     def custom_team_choose_player(context: Context):
-        winners = [int(x) for x in context.data.callback_data.data.split()]
+        winners = [int(x) for x in context.message.data.split()]
         MatchmakingHandlers.custom_team_open_menu(context, winners)
 
     @staticmethod
     def custom_team_confirm(context: Context):
-        team_won = [int(x) for x in context.data.callback_data.data.split()]
+        team_won = [int(x) for x in context.message.data.split()]
         all_players = PlayerHelpers.get_for_session(context)
         team_lost = [player.id for player in all_players if player.id not in team_won]
         MatchmakingHandlers._update_players(context, team_won, team_lost)

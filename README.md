@@ -1,7 +1,7 @@
 # TgBotTemplate
 
 [![Docker Pulls](https://img.shields.io/docker/pulls/viers/rumblerunner.svg)](https://hub.docker.com/r/viers/rumblerunner/)
-[![Build and publish](https://github.com/KrusnikViers/RumbleRunner/actions/workflows/github-actions.yml/badge.svg)](https://github.com/KrusnikViers/RumbleRunner/actions/)
+[![Build and publish](https://github.com/KrusnikViers/RumbleRunner/actions/workflows/github-Actionsyml/badge.svg)](https://github.com/KrusnikViers/RumbleRunner/actions/)
 [![Coverage - Codecov](https://codecov.io/gh/KrusnikViers/RumbleRunner/branch/master/graph/badge.svg)](https://codecov.io/gh/KrusnikViers/RumbleRunner)
 [![Maintainability](https://api.codeclimate.com/v1/badges/ea5b891843b7f3655b71/maintainability)](https://codeclimate.com/github/KrusnikViers/RumbleRunner/maintainability)
 

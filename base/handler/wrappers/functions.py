@@ -104,6 +104,6 @@ class WrapperFunctions:
 
                     answer = handlers_dict[request_type](context)
                     if answer is not None:
-                        Actions.send_message(answer, message=context.message)
+                        Actionssend_message(answer, message=context.message)
                 except Exception:
                     ReportsSender.report_exception(update)
