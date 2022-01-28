@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, PropertyMock
 
-from telegram import Chat, Update, Message as TgMessage
+from telegram import Chat, Update, Message as TgMessage, CallbackQuery
 
 from app.api.command_list import CallbackId
 from base.handler.wrappers.message import Message, CallbackData
@@ -42,3 +42,13 @@ class TestMessage(BaseTestCase):
         message = Message.from_update(update)
         self.assertIsNone(message.command)
         self.assertEqual(message.data, 'usual text')
+
+    def test_empty_message(self):
+        update = Update(000)
+        message = Message.from_update(update)
+        self.assertIsNone(message)
+
+    def test_empty_callback(self):
+        update = Update(000, callback_query=CallbackQuery('id', from_user=MagicMock(), chat_instance='instance'))
+        message = Message.from_update(update)
+        self.assertIsNone(message)

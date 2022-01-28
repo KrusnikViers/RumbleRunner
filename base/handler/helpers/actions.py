@@ -28,7 +28,7 @@ class Actions:
     def edit_message(new_message: str, message: Optional[Message] = None,
                      chat_id: Optional[int] = None, message_id: Optional[int] = None):
         effective_chat_id = chat_id if chat_id is not None else message.chat_id
-        effective_message_id = message_id if message is not None else message.message_id
+        effective_message_id = message_id if message_id is not None else message.message_id
         with _ScopedIgnoreTelegramErrors():
             BotScope.bot().edit_message_text(new_message,
                                              chat_id=effective_chat_id, message_id=effective_message_id)
@@ -37,7 +37,7 @@ class Actions:
     def edit_markup(new_markup, saved_msg_id=None, message: Optional[Message] = None,
                     chat_id: Optional[int] = None, message_id: Optional[int] = None):
         effective_chat_id = chat_id if chat_id is not None else message.chat_id
-        effective_message_id = message_id if message is not None else message.message_id
+        effective_message_id = message_id if message_id is not None else message.message_id
         with _ScopedIgnoreTelegramErrors():
             BotScope.bot().edit_message_reply_markup(reply_markup=new_markup,
                                                      chat_id=effective_chat_id,
