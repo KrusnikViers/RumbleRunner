@@ -13,7 +13,7 @@ def value_to_enum(id_type: Type[IdType], value) -> Optional[IdType]:
     try:
         result = id_type(value)
         return result
-    except TypeError:
+    except ValueError:
         logging.warning("Bad value {} for conversion into {}".format(value, id_type))
         return None
 
