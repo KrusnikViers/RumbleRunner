@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import List
 from typing import Optional
 
 from sqlalchemy import and_
@@ -7,6 +8,7 @@ from telegram.ext import CallbackContext
 
 from base.database import SessionScope
 from base.handler.helpers.actions import Actions
+from base.handler.helpers.inline_menu import InlineMenu, InlineMenuButton
 from base.handler.wrappers.bot_scope import BotScope
 from base.handler.wrappers.message import Message
 from base.models import TelegramUser, TelegramGroup, TelegramUserRequest
@@ -36,17 +38,21 @@ class Context:
                    message=Message.from_update(update),
                    sender=sender, group=group, request=request)
 
-    # Shortcuts for actions
-    def send_message(self, text: str, **kwargs) -> bool:
+    # Shortcuts
+    def personal_menu(self, markup: List[List[InlineMenuButton]]) -> InlineMenu:
+        return InlineMenu(markup, user_tg_id=self.sender.tg_id)
+
+    def send_message(self, text: str, **kwargs):
         return Actions.send_message(text, chat_id=self.message.chat_id, **kwargs)
 
-    def edit_message(self, new_message: str) -> bool:
-        return Actions.edit_message(new_message, chat_id=self.message.chat_id, message_id=self.message.message_id)
+    def edit_message(self, new_message: str, **kwargs):
+        return Actions.edit_message(new_message,
+                                    chat_id=self.message.chat_id, message_id=self.message.message_id, **kwargs)
 
-    def edit_markup(self, new_markup: object) -> bool:
+    def edit_markup(self, new_markup: object):
         return Actions.edit_markup(new_markup, chat_id=self.message.chat_id, message_id=self.message.message_id)
 
-    def delete_message(self) -> bool:
+    def delete_message(self):
         return Actions.delete_message(chat_id=self.message.chat_id, message_id=self.message.message_id)
 
     # Private methods

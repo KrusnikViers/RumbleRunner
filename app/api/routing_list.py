@@ -1,8 +1,5 @@
 from app.api.command_list import CallbackId, PendingRequestId
-from app.handlers.game_ranking import GameRankingHandlers
-from app.handlers.game_session import GameSessionHandlers
-from app.handlers.matchmaking import MatchmakingHandlers
-from app.handlers.player import PlayerHandlers
+from app.handlers import *
 from base import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg, ChatType
 from base.handler.default import canceling
 
@@ -13,32 +10,45 @@ ROUTING_LIST = [
                        canceling.delete_message_and_pending_request),
 
     # Add your instances of CallbackHandlerReg and CommandHandlerReg in this list to be picked up by the dispatching.
-    CommandHandlerReg(['trueskill', 'play'], GameRankingHandlers.open_menu, ChatType.GROUP),
-    CallbackHandlerReg(CallbackId.TS_RANKING_OPEN_MENU, GameRankingHandlers.open_menu_callback),
-    CallbackHandlerReg(CallbackId.TS_RANKING_STOP_GAME_SESSION, GameRankingHandlers.stop_game_session),
+    CommandHandlerReg(['trueskill', 'play'], MainMenuHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MAIN_MENU_OPEN, MainMenuHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MAIN_MENU_REDRAW, MainMenuHandlers.redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MAIN_MENU_STOP_SESSION, MainMenuHandlers.stop_session, ChatType.GROUP),
 
-    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_OPEN_MENU, PlayerHandlers.management_open_menu),
-    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_START_PLAYER_CREATION, PlayerHandlers.start_player_creation),
-    CallbackHandlerReg(CallbackId.TS_PLAYERS_MANAGEMENT_CANCEL_PLAYER_CREATION, PlayerHandlers.cancel_player_creation),
-    PendingRequestHandlerReg(PendingRequestId.TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME,
-                             PlayerHandlers.player_creation_name),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_OPEN, MatchupSelectionHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_REDRAW, MatchupSelectionHandlers.redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_CHOOSE_MATCHUP, MatchupSelectionHandlers.choose_matchup,
+                       ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_CHOOSE_WINNER_TEAM, MatchupSelectionHandlers.choose_winner_team,
+                       ChatType.GROUP),
 
-    CallbackHandlerReg(CallbackId.TS_PLAYER_OPEN_MENU, PlayerHandlers.open_menu),
-    CallbackHandlerReg(CallbackId.TS_PLAYER_START_RENAMING, PlayerHandlers.start_renaming),
-    CallbackHandlerReg(CallbackId.TS_PLAYER_CANCEL_RENAMING, PlayerHandlers.cancel_renaming),
-    CallbackHandlerReg(CallbackId.TS_PLAYER_RESET_SCORE, PlayerHandlers.reset_score),
-    CallbackHandlerReg(CallbackId.TS_PLAYER_DELETE, PlayerHandlers.delete),
-    PendingRequestHandlerReg(PendingRequestId.TS_PLAYER_RENAMING_NAME, PlayerHandlers.renaming_name),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_CUSTOM_WINNERS_REDRAW,
+                       MatchupSelectionHandlers.custom_winners_redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_CUSTOM_WINNERS_SWITCH,
+                       MatchupSelectionHandlers.custom_winners_switch, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.MATCHUP_SELECTION_CUSTOM_WINNERS_CONFIRM,
+                       MatchupSelectionHandlers.custom_winners_confirm, ChatType.GROUP),
 
-    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_OPEN_MENU, GameSessionHandlers.open_menu),
-    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_CREATE_NEW, GameSessionHandlers.create_new),
-    CallbackHandlerReg(CallbackId.TS_GAME_SESSION_CHOOSE_PLAYER, GameSessionHandlers.choose_player),
+    CallbackHandlerReg(CallbackId.SESSION_PLAYERS_OPEN, SessionPlayersHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.SESSION_PLAYERS_REDRAW, SessionPlayersHandlers.redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.SESSION_PLAYERS_NEW, SessionPlayersHandlers.new, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.SESSION_PLAYERS_SELECT, SessionPlayersHandlers.select, ChatType.GROUP),
 
-    CallbackHandlerReg(CallbackId.TS_MATCH_OPEN_MENU, MatchmakingHandlers.open_menu),
-    CallbackHandlerReg(CallbackId.TS_MATCH_CHOOSE_MATCHUP, MatchmakingHandlers.choose_matchup),
-    CallbackHandlerReg(CallbackId.TS_MATCH_CHOOSE_WINNERS, MatchmakingHandlers.choose_winners),
-    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_OPEN_MENU, MatchmakingHandlers.custom_team_open_menu),
-    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_CHOOSE_PLAYER,
-                       MatchmakingHandlers.custom_team_choose_player),
-    CallbackHandlerReg(CallbackId.TS_MATCH_CUSTOM_TEAM_CONFIRM, MatchmakingHandlers.custom_team_confirm),
+    CallbackHandlerReg(CallbackId.PLAYERS_LIST_OPEN, PlayersListHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYERS_LIST_REDRAW, PlayersListHandlers.redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYERS_LIST_PLAYER_CREATION_START, PlayersListHandlers.player_creation_start,
+                       ChatType.GROUP),
+    PendingRequestHandlerReg(PendingRequestId.PLAYERS_LIST_PLAYER_CREATION_NAME,
+                             PlayersListHandlers.player_creation_name),
+    CallbackHandlerReg(CallbackId.PLAYERS_LIST_PLAYER_CREATION_CANCEL, PlayersListHandlers.player_creation_cancel,
+                       ChatType.GROUP),
+
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_OPEN, PlayerProfileHandlers.open, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_REDRAW, PlayerProfileHandlers.redraw, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_RENAMING_START, PlayerProfileHandlers.renaming_start, ChatType.GROUP),
+    PendingRequestHandlerReg(PendingRequestId.PLAYER_PROFILE_RENAMING_NAME, PlayerProfileHandlers.renaming_name),
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_RENAMING_CANCEL, PlayerProfileHandlers.renaming_cancel,
+                       ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_SCORE_RESET, PlayerProfileHandlers.score_reset, ChatType.GROUP),
+    CallbackHandlerReg(CallbackId.PLAYER_PROFILE_DELETE, PlayerProfileHandlers.delete, ChatType.GROUP)
 ]

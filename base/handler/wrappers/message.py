@@ -29,7 +29,7 @@ class CallbackData:
 
 class Message:
     def __init__(self, command: Union[str, CallbackId, None] = None, data: Optional[str] = None,
-                 chat_id=None, message_id=None, callback_user_id=None):
+                 chat_id=None, message_id=None, callback_user_id=None, is_callback=False):
         self.command: Union[str, CallbackId, None] = command
         self.data: Optional[str] = data
 
@@ -37,6 +37,7 @@ class Message:
         self.message_id: Optional[int] = message_id
 
         self.callback_user_id: Optional[int] = callback_user_id
+        self.is_callback: bool = is_callback
 
     @classmethod
     def from_update(cls, update: Update) -> Optional['Message']:
@@ -53,7 +54,7 @@ class Message:
             return None
         callback_data = CallbackData.parse(update.callback_query.data)
         chat_id, message_id = Message._parse_ids(update.callback_query.message)
-        return cls(value_to_enum(CallbackId, callback_data.command), callback_data.data,
+        return cls(value_to_enum(CallbackId, callback_data.command), callback_data.data, is_callback=True,
                    callback_user_id=callback_data.user_id, chat_id=chat_id, message_id=message_id)
 
     @classmethod

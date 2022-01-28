@@ -9,7 +9,7 @@ DEFAULT_DB_PATH: pathlib.Path = ROOT_DIR.joinpath('/build').resolve()
 DEFAULT_CONFIG_PATH: pathlib.Path = ROOT_DIR.joinpath('configuration.ini').resolve()
 
 PROJECT_NAME: str = 'RumbleRunner'
-PROJECT_VERSION: str = '1.0.0'
+PROJECT_VERSION: str = '1.0.1'
 PROJECT_FULL_NAME: str = '{} v{}'.format(PROJECT_NAME, PROJECT_VERSION)
 
 # Add custom definitions below.

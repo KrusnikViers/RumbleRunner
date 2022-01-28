@@ -26,19 +26,18 @@ class TrueSkillPlayer:
     def __init__(self, player: Player):
         self.id = player.id
         self.rating = trueskill.Rating(player.mu, player.sigma)
-        self.winrate_diff = TrueSkillPlayer._calculate_winrate_diff(player)
+        self.winrate = TrueSkillPlayer._calculate_winrate(player)
 
     def __lt__(self, other):
         return (self.id < other.id) if self.rating.sigma == other.rating.sigma else (
                 self.rating.sigma < other.rating.sigma)
 
     @staticmethod
-    def _calculate_winrate_diff(player: Player) -> float:
-        last_participations = player.participations[:10]
-        if not len(last_participations):
-            return 0
-        winrate = sum(1 if p.is_winner else 0 for p in last_participations) / len(last_participations)
-        return max(0.0, 0.4 - winrate) ** 2
+    def _calculate_winrate(player: Player) -> float:
+        participations = player.participations
+        if not len(participations):
+            return 0.5
+        return sum(1 if p.is_winner else 0 for p in participations) / len(participations)
 
 
 class TrueSkillMatchup:
@@ -47,6 +46,7 @@ class TrueSkillMatchup:
         self.team_2 = sorted(team_2)
         self.quality = self._calculate_quality()
         self.win_chance = self._get_win_chance()
+        self.overweight = self._calculate_overweight()
         self.satisfaction = self._get_satisfaction()
 
     def _calculate_quality(self) -> float:
@@ -62,11 +62,13 @@ class TrueSkillMatchup:
         )
         return _ts_instance.cdf(delta_mu / denominator)
 
+    def _calculate_overweight(self):
+        return sqrt(1 - self.quality) * abs(self.win_chance - 0.5)
+
     def _get_satisfaction(self) -> float:
-        favourites, outsiders = (self.team_1, self.team_2) if self.win_chance > 0.5 else (self.team_2, self.team_1)
-        if self.win_chance > 0.6 or self.win_chance < 0.4:
-            return sum(player.winrate_diff for player in favourites) - sum(player.winrate_diff for player in outsiders)
-        return 0
+        return (sum([player.winrate - 0.5 for player in self.team_1]) * (1 - 2 * self.win_chance) +
+                sum([player.winrate - 0.5 for player in self.team_2]) * (2 * self.win_chance - 1)
+                ) * (1 - self.quality)
 
 
 class TrueSkillClient:
@@ -90,7 +92,7 @@ class TrueSkillClient:
                     continue
                 checked.add(TrueSkillClient._signature(team_1))
                 matchups.append(TrueSkillMatchup(team_1, team_2))
-        return sorted(matchups, key=lambda x: x.quality, reverse=True)
+        return matchups
 
     @staticmethod
     def update_players(team_won: List[Player], team_lost: List[Player]):

@@ -34,10 +34,11 @@ class GameSessionHelpers:
 
     @staticmethod
     def text_description(context: Context):
-        current_session = GameSessionHelpers.get(context)
-        if not current_session:
-            return 'All is quiet for now'
-        return 'Game session is in progress!\n\nMatches played: {}\nParticipants: {}'.format(
+        if not (current_session := GameSessionHelpers.get(context)):
+            return 'No active game session'
+        return ("Game session is in progress!\n"
+                "Matches played: {}\n"
+                "Participants (min 2): {}").format(
             current_session.matches_played,
-            ', '.join([player.name for player in current_session.players])
+            ', '.join(sorted([player.name for player in current_session.players]))
         )
