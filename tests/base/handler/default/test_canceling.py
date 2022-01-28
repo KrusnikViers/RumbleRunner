@@ -1,39 +1,26 @@
-from unittest.mock import MagicMock
-
 from app.api.command_list import PendingRequestId
-from base.database.scoped_session import ScopedSession
+from base.database.session_scope import SessionScope
 from base.handler.default.canceling import delete_message, delete_message_and_pending_request
-from base.models.all import TelegramUser
-from base.handler.wrapper.requests import Requests
+from base.handler.wrappers.context import Context
+from base.handler.wrappers.message import Message
+from base.handler.wrappers.requests import Requests
+from base.models.all import TelegramUserRequest
 from tests.utils import InBotTestCase
 
 
 class TestCancelingHandlers(InBotTestCase):
     def test_delete_message(self):
-        context = MagicMock()
-        delete_message(context)
-        context.actions.delete_message.assert_called_once()
+        delete_message(Context(message=Message(chat_id=111, message_id=222)))
+        self.bot_mock.delete_message.assert_called_once_with(chat_id=111, message_id=222)
 
     def test_delete_pending_message(self):
-        with ScopedSession(self.connection) as session:
-            user = TelegramUser(tg_id=1, first_name='a')
-            session.add(user)
-            context = MagicMock()
-            type(context).session = session
-            type(context).sender = user
-            type(context).group_id = None
-            type(context.actions).msg_id = 000
-            self.assertTrue(Requests.create(context, PendingRequestId.EXAMPLE_DUMMY_TYPE))
-            self.assertIsNotNone(Requests.get(context))
-        with ScopedSession(self.connection) as session:
-            user = session.query(TelegramUser).first()
-            context = MagicMock()
-            type(context).session = session
-            type(context).sender = user
-            type(context).group_id = None
-            type(context.actions).msg_id = 000
-            delete_message_and_pending_request(context)
+        with Context(sender=self.new_user(), message=Message(chat_id=111, message_id=222)) as context:
+            context.sender = self.new_user()
+            self.assertTrue(Requests.create(context, PendingRequestId.PREDEFINED_FOR_TESTS_1))
+            self.assertIsNotNone(context.request)
 
-            session.commit()
-            self.assertEqual(Requests.get(context), None)
-            context.actions.delete_message.assert_called_once()
+            with self.bot_mock():
+                delete_message_and_pending_request(context)
+                self.bot_mock.delete_message.assert_called_once_with(chat_id=111, message_id=222)
+            self.assertIsNone(context.request)
+            self.assertIsNone(SessionScope.session().query(TelegramUserRequest).first())

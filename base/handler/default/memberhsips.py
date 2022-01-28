@@ -1,47 +1,53 @@
 from typing import Optional
 
 from sqlalchemy import and_
+from telegram import User as TgUser, Message as TgMessage
 
-from base.database.helpers import DBHelpers
-from base.handler.wrapper.context import Context
+from base.database.session_scope import SessionScope
+from base.handler.wrappers.context import Context
 from base.models.all import TelegramUser, TelegramGroup, TelegramUserInGroup
+from base.models.helpers import ModelHelpers
 
 
 class Memberships:
     @staticmethod
     def update(context: Context):
-        if not context.group or not context.update.effective_message:
+        if not context.group or not context.raw_data or not context.raw_data.update.effective_message:
             return
-        users_to_create = [tg_user for tg_user in
-                           context.update.effective_message.new_chat_members if not tg_user.is_bot]
-        user_to_remove = context.update.effective_message.left_chat_member
-        if user_to_remove is None or user_to_remove.id != context.sender.tg_id:
-            sender_membership = Memberships._get_membership(context, context.update.effective_user.id)
-            if not sender_membership:
-                users_to_create += [context.update.effective_user]
-
-        for user_to_create in users_to_create:
-            if not Memberships._get_membership(context, user_to_create.id):
-                user_model = DBHelpers.select_and_update_by_tg_id(context.session, TelegramUser, user_to_create.id,
-                                                                  first_name=user_to_create.first_name,
-                                                                  last_name=user_to_create.last_name,
-                                                                  username=user_to_create.username)
-                new_membership = TelegramUserInGroup(telegram_user=user_model, telegram_group=context.group)
-                context.session.add(new_membership)
-
-        if user_to_remove is not None:
-            expired_membership = Memberships._get_membership(context, user_to_remove.id)
-            if expired_membership:
-                context.session.delete(expired_membership)
+        tg_message: TgMessage = context.raw_data.update.effective_message
+        for tg_user in tg_message.new_chat_members:
+            Memberships._add_tg_user(tg_user, context.group)
+        if context.sender:
+            Memberships._add_user(context.sender, context.group)
+        SessionScope.commit()
+        if tg_message.left_chat_member is not None:
+            Memberships._remove_user(tg_message.left_chat_member, context.group)
+        SessionScope.commit()
 
     # Private methods
     @staticmethod
-    def _get_membership(context: Context, user_tg_id: int) -> Optional[TelegramUserInGroup]:
-        return context.session.query(TelegramUserInGroup) \
-            .join(TelegramUserInGroup.telegram_group). \
-            join(TelegramUserInGroup.telegram_user) \
-            .filter(
-            and_(
-                TelegramGroup.tg_id == context.update.effective_chat.id,
-                TelegramUser.tg_id == user_tg_id
-            )).first()
+    def _add_tg_user(tg_user: TgUser, group: TelegramGroup):
+        user = ModelHelpers.get_from_tg_user(tg_user)
+        if user:
+            Memberships._add_user(user, group)
+
+    @staticmethod
+    def _add_user(user: TelegramUser, group: TelegramGroup):
+        if Memberships._get_membership(user, group) is None:
+            new_membership = TelegramUserInGroup(telegram_user_id=user.id, telegram_group_id=group.id)
+            SessionScope.session().add(new_membership)
+
+    @staticmethod
+    def _remove_user(tg_user: TgUser, group: TelegramGroup):
+        user = ModelHelpers.get_from_tg_user(tg_user)
+        if user:
+            membership = Memberships._get_membership(user, group)
+            if membership:
+                SessionScope.session().delete(membership)
+
+    @staticmethod
+    def _get_membership(user: TelegramUser, group: TelegramGroup) -> Optional[TelegramUserInGroup]:
+        return SessionScope.session().query(TelegramUserInGroup).filter(and_(
+            TelegramUserInGroup.telegram_user_id == user.id,
+            TelegramUserInGroup.telegram_group_id == group.id
+        )).one_or_none()

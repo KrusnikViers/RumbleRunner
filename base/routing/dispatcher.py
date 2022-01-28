@@ -5,8 +5,8 @@ from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, \
     Updater, Filters as TgFilters
 
 from base.database.connection import DatabaseConnection
-from base.handler.wrapper.functions import WrapperFunctions
 from base.handler.default.memberhsips import Memberships
+from base.handler.wrappers.functions import WrapperFunctions
 from base.routing.registration import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg
 
 
@@ -35,7 +35,7 @@ class Dispatcher:
             else:
                 raise ValueError
         if pending_actions_dict:
-            resulting_callable = functools.partial(WrapperFunctions.pending_action, pending_actions_dict, self.db)
+            resulting_callable = functools.partial(WrapperFunctions.request, pending_actions_dict, self.db)
             self.updater.dispatcher.add_handler(MessageHandler(TgFilters.text, resulting_callable))
 
     def _add_default_handlers(self):

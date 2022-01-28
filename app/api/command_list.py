@@ -2,12 +2,26 @@
 # Place to store custom PendingActions values. Pending request is a scheduled action, when you are waiting for the
 # user input. If user has any pending action and text message from the user was received, corresponding handler
 # will be executed for this message. Remember to clean pending action, if input was sufficient!
+import logging
 from enum import Enum, IntEnum, unique
+from typing import Optional, TypeVar, Type
+
+IdType = TypeVar('IdType')
+
+
+def value_to_enum(id_type: Type[IdType], value) -> Optional[IdType]:
+    try:
+        result = id_type(value)
+        return result
+    except TypeError:
+        logging.warning("Bad value {} for conversion into {}".format(value, id_type))
+        return None
 
 
 @unique
 class PendingRequestId(str, Enum):
-    EXAMPLE_DUMMY_TYPE = 'dummy'
+    PREDEFINED_FOR_TESTS_1 = 'dummy_1'
+    PREDEFINED_FOR_TESTS_2 = 'dummy_2'
 
     # Place your custom pending request types below
     TS_PLAYERS_MANAGEMENT_PLAYER_CREATION_NAME = 'player_creation_name'

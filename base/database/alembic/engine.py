@@ -5,24 +5,7 @@ from alembic.config import Config as AlembicConfig
 from sqlalchemy.engine import Engine
 
 from app.api.info import ROOT_DIR
-
-
-class MigrationScope:
-    _scoped_engine = None
-
-    @classmethod
-    def current_engine(cls):
-        return cls._scoped_engine
-
-    def __init__(self, engine):
-        self._old_engine = MigrationScope._scoped_engine
-        self._engine = engine
-
-    def __enter__(self):
-        MigrationScope._scoped_engine = self._engine
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        MigrationScope._scoped_engine = self._old_engine
+from base.database.alembic.migration_scope import MigrationScope
 
 
 class MigrationEngine:

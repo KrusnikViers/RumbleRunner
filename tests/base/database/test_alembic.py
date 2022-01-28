@@ -2,11 +2,11 @@ import os
 import sys
 
 from app.api.info import APP_DIR
-from base.database.alembic.migrations import MigrationEngine
+from base.database.alembic.engine import MigrationEngine
 from tests.utils import InBotTestCase
 
 
-class PrintSuppressor:
+class ScopedPrintSuppressor:
     def __enter__(self):
         self._original_stdout = sys.stdout
         sys.stdout = open(os.devnull, 'w')
@@ -16,13 +16,13 @@ class PrintSuppressor:
         sys.stdout = self._original_stdout
 
 
-class TestMigrations(InBotTestCase):
+class TestAlembic(InBotTestCase):
     def test_nothing_more_to_migrate(self):
         migrations_dir = APP_DIR.joinpath('migrations')
 
         # Generate new migration and make sure it was generated.
         old_migrations_list = sorted(os.listdir(migrations_dir))
-        with PrintSuppressor():
+        with ScopedPrintSuppressor():
             MigrationEngine(self.connection.engine).make_migrations()
         new_migrations = [file for file in os.listdir(migrations_dir) if file not in old_migrations_list]
         self.assertEqual(1, len(new_migrations))

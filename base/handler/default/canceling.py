@@ -1,14 +1,12 @@
 from base.api.handler import Context
-from base.api.routing import Requests
+from base.handler.helpers.actions import Actions
+from base.handler.wrappers.requests import Requests
 
 
 def delete_message(context: Context):
-    context.actions.delete_message()
+    Actions.delete_message(message=context.message)
 
 
 def delete_message_and_pending_request(context: Context):
-    pending_request = Requests.get(context)
-    if pending_request:
-        context.session.delete(pending_request)
-        context.session.commit()
+    Requests.delete(context)
     delete_message(context)

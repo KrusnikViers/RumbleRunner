@@ -1,5 +1,5 @@
 # File with configuration parser (configuration.ini file).
-# Since your bot may require having more settings stored in the file, feel free to add them to the __init__ and create()
+# Since your bot may require having more settings stored in the file, feel free to add them to the __init__ and parse()
 # functions, as well as more normalization helpers.
 import argparse
 import configparser
@@ -16,7 +16,7 @@ class Config:
         self.storage_dir = storage_dir
 
     @classmethod
-    def create(cls) -> 'Config':
+    def parse(cls) -> 'Config':
         config_path = cls._read_config_path_from_args()
         return cls._parse_config_file(config_path)
 

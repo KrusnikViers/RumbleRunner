@@ -2,7 +2,7 @@ import logging
 
 from app.core.trueskill import TrueSkillParams, TrueSkillPlayer, TrueSkillMatchup, TrueSkillClient
 from app.models.all import Player, GameRanking
-from base.api.database import ScopedSession
+from base.api.database import SessionScope
 from tests.utils import InBotTestCase
 
 
@@ -72,7 +72,7 @@ class TestHistorical(InBotTestCase):
         players = {}
         # logging.disable(logging.NOTSET)
         logging.getLogger().setLevel(logging.INFO)
-        with ScopedSession(self.connection) as session:
+        with SessionScope(self.connection) as session:
             session.add(GameRanking(id=1, tg_group_id=1))
             for i in range(0, 10):
                 players[i] = Player(id=i, name='Player {}'.format(i), game_ranking_id=1,

@@ -3,8 +3,7 @@ import logging
 from sqlalchemy.engine import create_engine, Engine
 from sqlalchemy.orm import sessionmaker
 
-from app.api.config import Config
-from base.database.alembic.migrations import MigrationEngine
+from base.database.alembic.engine import MigrationEngine
 
 
 class DatabaseConnection:

@@ -1,6 +1,6 @@
 from app.api.config import Config
 from base.bot import Bot
-from base.database.alembic.migrations import MigrationEngine
+from base.database.alembic.engine import MigrationEngine
 from base.database.connection import DatabaseConnection
 
 Bot.set_logging_format()
@@ -9,7 +9,7 @@ Bot.set_logging_format()
 # Make sure that:
 # - directory app/storage/migrations/versions exists
 # - db_path directory exists as well
-config = Config.create()
+config = Config.parse()
 connection = DatabaseConnection.create(config.storage_dir)
 migration_engine = MigrationEngine(connection.engine)
 migration_engine.make_migrations()

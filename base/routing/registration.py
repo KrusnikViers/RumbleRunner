@@ -2,7 +2,7 @@ from enum import Enum, unique
 from typing import Callable, Optional
 
 from app.api.command_list import CallbackId, PendingRequestId
-from base.handler.wrapper.context import Context
+from base.handler.wrappers.context import Context
 
 
 @unique

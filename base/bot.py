@@ -7,6 +7,7 @@ from app.api.config import Config
 from app.api.routing_list import ROUTING_LIST
 from base.api.database import DatabaseConnection
 from base.handler.default.reporting import ReportsSender
+from base.handler.helpers.actions import BotScope
 from base.routing.dispatcher import Dispatcher
 
 
@@ -24,13 +25,14 @@ class Bot:
     def run(self):
         Bot.set_logging_format()
 
-        self.configuration = Config.create()
+        self.configuration = Config.parse()
         self.updater = Updater(token=self.configuration.bot_token)
         self.database_connection = DatabaseConnection.create(self.configuration.storage_dir)
         self.dispatcher = Dispatcher(self.updater, self.database_connection, ROUTING_LIST)
-        ReportsSender.instance = ReportsSender(self.updater.bot, self.configuration.admin_username)
+        ReportsSender.set_admin(self.configuration.admin_username)
 
         logging.info('Launching bot: ' + str(self.updater.bot.get_me()))
-        self.updater.start_polling()
-        # This call will lock execution until worker threads are stopped with SIGINT(2), SIGTERM(15) or SIGABRT(6).
-        self.updater.idle()
+        with BotScope(self.updater.bot):
+            self.updater.start_polling()
+            # This call will lock execution until worker threads are stopped with SIGINT(2), SIGTERM(15) or SIGABRT(6).
+            self.updater.idle()
