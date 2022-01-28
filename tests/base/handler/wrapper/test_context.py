@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
-from base import Context, Message
+from app.api import CallbackId
+from base import Context, Message, InlineMenuButton
 from tests.utils import InBotTestCase
 
 
@@ -27,3 +28,8 @@ class TestContext(InBotTestCase):
 
         context.delete_message()
         self.bot_mock.delete_message.assert_called_once_with(chat_id=1111, message_id=2222)
+
+    def test_personal_menu(self):
+        context = Context(message=Message(chat_id=1111, message_id=2222), sender=self.new_user())
+        test_menu = context.personal_menu([[InlineMenuButton('Test', CallbackId.COMMON_DELETE_MESSAGE)]])
+        self.assertEqual(test_menu.inline_keyboard[0][0].callback_data, '0:{}:'.format(context.sender.tg_id))
