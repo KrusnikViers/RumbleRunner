@@ -1,7 +1,5 @@
-from base.database.session_scope import SessionScope
-from base.models.all import TelegramUser
+from base import SessionScope, TelegramUser, DatabaseConnection
 from tests.utils import BaseTestCase
-from base.database.connection import DatabaseConnection
 
 
 class TestScopedSession(BaseTestCase):

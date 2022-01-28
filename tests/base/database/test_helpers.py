@@ -1,6 +1,4 @@
-from base.database.helpers import DBHelpers
-from base.database.session_scope import SessionScope
-from base.models.all import TelegramUser
+from base import DBHelpers, SessionScope, TelegramUser
 from tests.utils import InBotTestCase
 
 

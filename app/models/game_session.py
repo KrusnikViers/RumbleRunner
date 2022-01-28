@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, Integer, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 
-from base.api.models import BaseDBModel
+from base import BaseDBModel
 
 
 class GameSession(BaseDBModel):

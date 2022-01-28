@@ -4,15 +4,13 @@ from typing import Callable, Optional, Dict
 from telegram import Update, Chat
 from telegram.ext import CallbackContext
 
-from app.api.command_list import value_to_enum, PendingRequestId
-from base.database.connection import DatabaseConnection
-from base.database.session_scope import SessionScope
-from base.handler.default.memberhsips import Memberships
-from base.handler.default.reporting import ReportsSender
-from base.handler.helpers.actions import Actions
+from app import value_to_enum, PendingRequestId
+from base.database import DatabaseConnection, SessionScope
+from base.handler.default import Memberships, ReportsSender
+from base.handler.helpers import Actions
 from base.handler.wrappers.context import Context
 from base.handler.wrappers.message import CallbackData
-from base.routing.registration import ChatType
+from base.routing import ChatType
 
 
 class _Filter:
@@ -45,9 +43,8 @@ class WrapperFunctions:
             with Context.from_update(update, callback_context) as context:
                 try:
                     Memberships.update(context)
-                    answer = handler_fn(context)
-                    if answer is not None:
-                        Actions.send_message(answer, message=context.message)
+                    if (answer := handler_fn(context)) is not None:
+                        context.send_message(answer)
                 except Exception:
                     ReportsSender.report_exception(update)
 
@@ -92,18 +89,16 @@ class WrapperFunctions:
             with Context.from_update(update, callback_context) as context:
                 try:
                     Memberships.update(context)
+
                     if context.request is None:
                         return
-
-                    request_type = value_to_enum(PendingRequestId, context.request.type)
-                    if not request_type:
+                    if (request_type := value_to_enum(PendingRequestId, context.request.type)) is None:
                         return
                     if request_type not in handlers_dict:
                         logging.warning('Missing handler for request type: {}'.format(context.request.type))
                         return
 
-                    answer = handlers_dict[request_type](context)
-                    if answer is not None:
-                        Actionssend_message(answer, message=context.message)
+                    if (answer := handlers_dict[request_type](context)) is not None:
+                        Actions.send_message(answer, message=context.message)
                 except Exception:
                     ReportsSender.report_exception(update)

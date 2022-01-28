@@ -4,10 +4,12 @@ from typing import Optional
 from sqlalchemy import and_
 from telegram import Update
 from telegram.ext import CallbackContext
+
+from base.database import SessionScope
+from base.handler.helpers.actions import Actions
 from base.handler.wrappers.bot_scope import BotScope
-from base.database.session_scope import SessionScope
 from base.handler.wrappers.message import Message
-from base.models.all import TelegramUser, TelegramGroup, TelegramUserRequest
+from base.models import TelegramUser, TelegramGroup, TelegramUserRequest
 from base.models.helpers import ModelHelpers
 
 RawContextData = namedtuple('RawData', ['update', 'callback_context'])
@@ -33,6 +35,19 @@ class Context:
         return cls(raw_data=RawContextData(update, callback_context),
                    message=Message.from_update(update),
                    sender=sender, group=group, request=request)
+
+    # Shortcuts for actions
+    def send_message(self, text: str, **kwargs) -> bool:
+        return Actions.send_message(text, chat_id=self.message.chat_id, **kwargs)
+
+    def edit_message(self, new_message: str) -> bool:
+        return Actions.edit_message(new_message, chat_id=self.message.chat_id, message_id=self.message.message_id)
+
+    def edit_markup(self, new_markup: object) -> bool:
+        return Actions.edit_markup(new_markup, chat_id=self.message.chat_id, message_id=self.message.message_id)
+
+    def delete_message(self) -> bool:
+        return Actions.delete_message(chat_id=self.message.chat_id, message_id=self.message.message_id)
 
     # Private methods
     def __enter__(self):

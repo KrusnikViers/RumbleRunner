@@ -1,6 +1,5 @@
-from app.models.all import GameRanking
-from base.api.database import SessionScope
-from base.api.handler import Context
+from app.models import GameRanking
+from base import SessionScope, Context
 
 
 class GameRankingHelpers:

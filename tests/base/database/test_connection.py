@@ -1,4 +1,4 @@
-from base.database.connection import DatabaseConnection
+from base import DatabaseConnection
 from tests.utils import BaseTestCase, TEST_DATA_TMP_DIR
 
 

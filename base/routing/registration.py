@@ -1,8 +1,8 @@
 from enum import Enum, unique
 from typing import Callable, Optional
 
-from app.api.command_list import CallbackId, PendingRequestId
-from base.handler.wrappers.context import Context
+from app import CallbackId, PendingRequestId
+from base.handler import Context
 
 
 @unique

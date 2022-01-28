@@ -1,7 +1,7 @@
-from app.api.config import Config
+from app.api import Config
+from base import DatabaseConnection
 from base.bot import Bot
 from base.database.alembic.engine import MigrationEngine
-from base.database.connection import DatabaseConnection
 
 Bot.set_logging_format()
 

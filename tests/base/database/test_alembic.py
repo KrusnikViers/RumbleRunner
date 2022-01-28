@@ -1,8 +1,8 @@
 import os
 import sys
 
-from app.api.info import APP_DIR
-from base.database.alembic.engine import MigrationEngine
+from app import APP_DIR
+from base.database.alembic import MigrationEngine
 from tests.utils import InBotTestCase
 
 

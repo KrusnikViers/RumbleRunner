@@ -1,9 +1,8 @@
 from sqlalchemy import and_
 
 from app.core.game_ranking import GameRankingHelpers
-from app.models.all import GameSession, Player
-from base.api.database import SessionScope
-from base.api.handler import Context
+from app.models import GameSession, Player
+from base import SessionScope, Context
 
 
 class GameSessionHelpers:

@@ -1,9 +1,6 @@
 from unittest.mock import MagicMock
 
-from base.database.session_scope import SessionScope
-from base.handler.default.reporting import ReportsSender
-from base.handler.wrappers.context import Context
-from base.models.all import TelegramUser
+from base import SessionScope, ReportsSender, TelegramUser
 from tests.utils import InBotTestCase, MatcherAny
 
 
@@ -18,4 +15,4 @@ class TestReports(InBotTestCase):
 
         ReportsSender.set_admin('admin')
         ReportsSender.report_exception(MagicMock())
-        self.bot_mock.send_message.assert_called_once_with(123, MatcherAny())
+        self.bot_mock.send_message.assert_called_once_with(chat_id=123, text=MatcherAny())

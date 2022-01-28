@@ -1,8 +1,8 @@
 import logging
 
 from app.core.trueskill import TrueSkillParams, TrueSkillPlayer, TrueSkillMatchup, TrueSkillClient
-from app.models.all import Player, GameRanking
-from base.api.database import SessionScope
+from app.models import Player, GameRanking
+from base import SessionScope
 from tests.utils import InBotTestCase
 
 

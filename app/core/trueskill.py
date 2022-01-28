@@ -5,8 +5,8 @@ from typing import List
 import trueskill
 
 from app.core.player import PlayerHelpers
-from app.models.all import Player
-from base.api.handler import Context
+from app.models import Player
+from base import Context
 
 
 class TrueSkillParams:

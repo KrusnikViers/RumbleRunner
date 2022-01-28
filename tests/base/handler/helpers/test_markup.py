@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton
 
-from base.handler.helpers.inline_menu import InlineMenu, InlineMenuButton
+from base import InlineMenu, InlineMenuButton
 from tests.utils import BaseTestCase
 
 

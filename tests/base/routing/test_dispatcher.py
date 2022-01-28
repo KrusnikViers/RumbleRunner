@@ -1,10 +1,9 @@
 from unittest.mock import MagicMock, call
 
-from app.api.command_list import CallbackId
+from app import CallbackId
+from base import CommandHandlerReg, CallbackHandlerReg, PendingRequestHandlerReg
 from base.routing.dispatcher import Dispatcher
-from base.routing.registration import CommandHandlerReg, CallbackHandlerReg, PendingRequestHandlerReg
-from tests.utils import BaseTestCase
-from tests.utils import MatcherAny
+from tests.utils import BaseTestCase, MatcherAny
 
 
 class TestDispatcher(BaseTestCase):

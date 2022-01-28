@@ -4,8 +4,8 @@ from typing import List, Union
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler, \
     Updater, Filters as TgFilters
 
-from base.database.connection import DatabaseConnection
-from base.handler.default.memberhsips import Memberships
+from base.database import DatabaseConnection
+from base.handler import Memberships
 from base.handler.wrappers.functions import WrapperFunctions
 from base.routing.registration import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg
 

@@ -1,9 +1,8 @@
 from app.api.command_list import CallbackId
 from app.core.game_session import GameSessionHelpers
 from app.core.player import PlayerHelpers
-from app.models.all import Player
-from base.api.database import SessionScope
-from base.api.handler import Context, InlineMenu, InlineMenuButton, Actions
+from app.models import Player
+from base import SessionScope, Context, InlineMenu, InlineMenuButton, Actions
 
 
 class GameSessionHandlers:

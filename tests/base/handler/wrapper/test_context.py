@@ -1,15 +1,29 @@
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
-from telegram import Chat, Update
-
-from base.handler.wrappers import context
+from base import Context, Message
 from tests.utils import InBotTestCase
 
 
 class TestContext(InBotTestCase):
     def test_callback_resolving(self):
-        instance = context.Context.from_update(MagicMock(), MagicMock())
+        instance = Context.from_update(MagicMock(), MagicMock())
         with instance:
             self.bot_mock.answer_callback_query.assert_not_called()
         self.bot_mock.answer_callback_query.assert_called_once()
 
+    def test_shortcuts(self):
+        context = Context(message=Message(chat_id=1111, message_id=2222))
+        new_markup = MagicMock()
+
+        context.send_message('message', reply_markup=new_markup)
+        self.bot_mock.send_message.assert_called_once_with(text='message', chat_id=1111, reply_markup=new_markup)
+
+        context.edit_message('new_message')
+        self.bot_mock.edit_message_text.assert_called_once_with('new_message', chat_id=1111, message_id=2222)
+
+        context.edit_markup(new_markup)
+        self.bot_mock.edit_message_reply_markup.assert_called_once_with(reply_markup=new_markup,
+                                                                        chat_id=1111, message_id=2222)
+
+        context.delete_message()
+        self.bot_mock.delete_message.assert_called_once_with(chat_id=1111, message_id=2222)

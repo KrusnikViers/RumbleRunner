@@ -1,16 +1,15 @@
 import logging
+from contextlib import ExitStack
 from typing import Optional
 from unittest import TestCase
 from unittest.mock import MagicMock
-from unittest.result import TestResult
 
 from app.api.info import ROOT_DIR
 from base.database.connection import DatabaseConnection
 from base.database.session_scope import SessionScope
 from base.handler.default.reporting import ReportsSender
 from base.handler.wrappers.bot_scope import BotScope
-from base.models.all import TelegramUser
-from contextlib import ExitStack
+from base.models import TelegramUser
 
 TEST_DATA_DIR = ROOT_DIR.joinpath('tests', 'test_data').resolve()
 TEST_DATA_TMP_DIR = TEST_DATA_DIR.joinpath('tmp')
@@ -52,4 +51,3 @@ class InBotTestCase(BaseTestCase):
         SessionScope.session().add(user)
         SessionScope.commit()
         return user
-

@@ -1,9 +1,9 @@
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
 from telegram import Chat, Update, Message as TgMessage, CallbackQuery
 
-from app.api.command_list import CallbackId
-from base.handler.wrappers.message import Message, CallbackData
+from app import CallbackId
+from base import Message, CallbackData
 from tests.utils import BaseTestCase
 
 
@@ -25,7 +25,8 @@ class TestMessage(BaseTestCase):
         self.assertEqual(CallbackData(CallbackId.COMMON_DELETE_MESSAGE, user_id=11, data='a b').encode(), '0:11:a b')
 
     def test_message_extraction(self):
-        update = Update(000, message=TgMessage(111, None, text='/command some text after', chat=Chat(222, Chat.PRIVATE)))
+        update = Update(000,
+                        message=TgMessage(111, None, text='/command some text after', chat=Chat(222, Chat.PRIVATE)))
         message = Message.from_update(update)
         self.assertEqual(message.command, '/command')
         self.assertEqual(message.data, 'some text after')

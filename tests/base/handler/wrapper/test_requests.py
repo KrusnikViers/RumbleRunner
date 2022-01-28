@@ -1,7 +1,5 @@
-from app.api.command_list import PendingRequestId
-from base.handler.wrappers.context import Context
-from base.handler.wrappers.message import Message
-from base.handler.wrappers.requests import Requests
+from app import PendingRequestId
+from base import Context, Message, Requests
 from tests.utils import InBotTestCase
 
 

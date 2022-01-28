@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from base.api.models import BaseDBModel
+from base import BaseDBModel
 
 
 class Player(BaseDBModel):

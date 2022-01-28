@@ -3,7 +3,7 @@ from app.handlers.game_ranking import GameRankingHandlers
 from app.handlers.game_session import GameSessionHandlers
 from app.handlers.matchmaking import MatchmakingHandlers
 from app.handlers.player import PlayerHandlers
-from base.api.routing import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg, ChatType
+from base import CallbackHandlerReg, CommandHandlerReg, PendingRequestHandlerReg, ChatType
 from base.handler.default import canceling
 
 ROUTING_LIST = [

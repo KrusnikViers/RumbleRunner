@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from telegram import Update, Message as TgMessage
 
-from app.api.command_list import CallbackId, value_to_enum
+from app import CallbackId, value_to_enum
 
 
 class CallbackData:

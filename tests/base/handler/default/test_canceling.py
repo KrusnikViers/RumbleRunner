@@ -1,10 +1,6 @@
-from app.api.command_list import PendingRequestId
-from base.database.session_scope import SessionScope
+from app import PendingRequestId
+from base import SessionScope, Context, Message, Requests, TelegramUserRequest
 from base.handler.default.canceling import delete_message, delete_message_and_pending_request
-from base.handler.wrappers.context import Context
-from base.handler.wrappers.message import Message
-from base.handler.wrappers.requests import Requests
-from base.models.all import TelegramUserRequest
 from tests.utils import InBotTestCase
 
 

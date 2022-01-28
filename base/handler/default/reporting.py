@@ -4,9 +4,9 @@ from typing import Optional
 
 from telegram import Update
 
-from base.database.session_scope import SessionScope
-from base.handler.wrappers.bot_scope import BotScope
-from base.models.all import TelegramUser
+from base.database import SessionScope
+from base.handler.helpers.actions import Actions
+from base.models import TelegramUser
 
 
 class ReportsSender:
@@ -22,7 +22,7 @@ class ReportsSender:
         logging.warning(message)
         superuser = cls._find_superuser()
         if superuser:
-            BotScope.bot().send_message(superuser.tg_id, message)
+            Actions.send_message(message, chat_id=superuser.tg_id)
 
     @classmethod
     def _find_superuser(cls) -> Optional[TelegramUser]:

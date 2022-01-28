@@ -3,9 +3,9 @@ from typing import Optional
 from sqlalchemy import and_
 from telegram import User as TgUser, Message as TgMessage
 
-from base.database.session_scope import SessionScope
-from base.handler.wrappers.context import Context
-from base.models.all import TelegramUser, TelegramGroup, TelegramUserInGroup
+from base.database import SessionScope
+from base.handler.wrappers import Context
+from base.models import TelegramUser, TelegramGroup, TelegramUserInGroup
 from base.models.helpers import ModelHelpers
 
 

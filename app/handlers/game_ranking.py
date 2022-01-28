@@ -1,6 +1,6 @@
-from app.api.command_list import CallbackId
+from app.api import CallbackId
 from app.core.game_session import GameSessionHelpers
-from base.api.handler import Context, InlineMenu, InlineMenuButton, Actions
+from base import Context, InlineMenu, InlineMenuButton, Actions
 
 
 class GameRankingHandlers:

@@ -3,10 +3,9 @@ from typing import Optional
 
 from telegram.ext import Updater
 
-from app.api.config import Config
+from app.api import Config
 from app.api.routing_list import ROUTING_LIST
-from base.api.database import DatabaseConnection
-from base.handler.default.reporting import ReportsSender
+from base import DatabaseConnection, ReportsSender
 from base.handler.helpers.actions import BotScope
 from base.routing.dispatcher import Dispatcher
 

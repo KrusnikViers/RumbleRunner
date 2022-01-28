@@ -1,7 +1,7 @@
 import pathlib
 import sys
 
-from app.api.config import Config
+from app import Config
 from tests.utils import BaseTestCase, TEST_DATA_DIR
 
 

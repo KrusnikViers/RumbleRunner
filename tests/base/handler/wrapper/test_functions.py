@@ -1,14 +1,10 @@
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock
 
 from telegram import Chat, User as TgUser, Message as TgMessage, Update, CallbackQuery
 
-from app.api.command_list import PendingRequestId
-from base.database.session_scope import SessionScope
-from base.handler.wrappers.context import Context
+from app import PendingRequestId
+from base import SessionScope, Context, Requests, TelegramUser, TelegramUserRequest, ChatType
 from base.handler.wrappers.functions import WrapperFunctions
-from base.handler.wrappers.requests import Requests
-from base.models.all import TelegramUser, TelegramUserRequest
-from base.routing.registration import ChatType
 from tests.utils import InBotTestCase
 
 

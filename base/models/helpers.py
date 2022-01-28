@@ -2,8 +2,9 @@ from typing import Optional
 
 from telegram import User as TgUser, Chat as TgChat
 
-from base.database.helpers import DBHelpers
-from base.models.all import TelegramUser, TelegramGroup
+from base.database import DBHelpers
+from base.models.telegram_group import TelegramGroup
+from base.models.telegram_user import TelegramUser
 
 
 class ModelHelpers:

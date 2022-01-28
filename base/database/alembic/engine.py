@@ -4,7 +4,7 @@ from alembic import command
 from alembic.config import Config as AlembicConfig
 from sqlalchemy.engine import Engine
 
-from app.api.info import ROOT_DIR
+from app.api import ROOT_DIR
 from base.database.alembic.migration_scope import MigrationScope
 
 
