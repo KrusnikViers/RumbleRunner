@@ -9,14 +9,13 @@ from base import SessionScope, Context, InlineMenuButton
 class MatchupSelectionHandlers:
     _MARKS = {
         'star': '⭐', 'glowing_star': '🌟',
+        'heart': '❤', 'broken_heart': '💔',
         'green': '🟢', 'yellow': '🟡', 'orange': '🟠', 'red': '🔴'
     }
 
     @staticmethod
     def _get_matchups(context):
-        matchups = TrueSkillClient.calculate_matchups(context)
-        matchups.sort(key=lambda x: x.quality, reverse=True)
-        return matchups[:7]
+        return TrueSkillClient.select_good_matchups(context)[:8]
 
     @staticmethod
     def _encode_teams(team_1: list, team_2: list) -> str:
@@ -31,10 +30,20 @@ class MatchupSelectionHandlers:
 
     @staticmethod
     def _matchup_marks(matchup: TrueSkillMatchup):
-        def _r(x): return round(x, 2)
-
-        return 'Ql: {}, OVW: {}, W: {}, ST: {}'.format(_r(matchup.quality), _r(matchup.overweight),
-                                                       _r(abs(matchup.win_chance)), _r(matchup.satisfaction))
+        result = ''
+        if matchup.streakbreaker > 0:
+            result += MatchupSelectionHandlers._MARKS['heart']
+        elif matchup.streakbreaker < 0:
+            result += MatchupSelectionHandlers._MARKS['broken_heart']
+        if matchup.uncertainty >= 0.5 and abs(matchup.win_chance - 0.5) < 0.2:
+            result += MatchupSelectionHandlers._MARKS['green']
+        elif matchup.uncertainty >= 0.5 or abs(matchup.win_chance - 0.5) < 0.2:
+            result += MatchupSelectionHandlers._MARKS['yellow']
+        elif matchup.uncertainty >= 0.2 and abs(matchup.win_chance - 0.5) < 0.2:
+            result += MatchupSelectionHandlers._MARKS['orange']
+        else:
+            result += MatchupSelectionHandlers._MARKS['red']
+        return result
 
     @staticmethod
     def _update_players(context: Context, team_won: list, team_lost: list):
@@ -60,10 +69,11 @@ class MatchupSelectionHandlers:
         matchup_descriptions = []
         for index, matchup in enumerate(matchups):
             matchup_descriptions.append(
-                ("Option {} ({})\n"
+                ("Option {} {}\n"
                  "{}\n"
                  "{}"
-                 ).format(str(index + 1), MatchupSelectionHandlers._matchup_marks(matchup),
+                 ).format(str(index + 1),
+                          MatchupSelectionHandlers._matchup_marks(matchup),
                           ", ".join([players_map[player.id].name for player in matchup.team_1]),
                           ", ".join([players_map[player.id].name for player in matchup.team_2])))
         return "Choose your matchup:\n\n" + "\n\n".join(matchup_descriptions)

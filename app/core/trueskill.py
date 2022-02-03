@@ -26,35 +26,34 @@ class TrueSkillPlayer:
     def __init__(self, player: Player):
         self.id = player.id
         self.rating = trueskill.Rating(player.mu, player.sigma)
-        self.winrate = TrueSkillPlayer._calculate_winrate(player)
+        self.last_results = [p.is_winner for p in sorted(player.participations, key=lambda x: x.id, reverse=True)]
+
+        self.antistreak = self._antistreak()
 
     def __lt__(self, other):
-        return (self.id < other.id) if self.rating.sigma == other.rating.sigma else (
-                self.rating.sigma < other.rating.sigma)
+        return self.id < other.id
 
-    @staticmethod
-    def _calculate_winrate(player: Player) -> float:
-        participations = player.participations
-        if not len(participations):
-            return 0.5
-        return sum(1 if p.is_winner else 0 for p in participations) / len(participations)
+    def _antistreak(self):
+        if len(self.last_results) < 2:
+            return False
+        results_to_count = min(len(self.last_results), 6)
+        return sum([1 if won else 0 for won in self.last_results[:results_to_count]]) <= (0.4 * results_to_count)
 
 
 class TrueSkillMatchup:
     def __init__(self, team_1: List[TrueSkillPlayer], team_2: List[TrueSkillPlayer]):
         self.team_1 = sorted(team_1)
         self.team_2 = sorted(team_2)
-        self.quality = self._calculate_quality()
-        self.win_chance = self._get_win_chance()
-        self.overweight = self._calculate_overweight()
-        self.satisfaction = self._get_satisfaction()
+        self.uncertainty = self._ts_quality()
+        self.win_chance = self._win_chance()
+        self.streakbreaker = self._streakbreaker()
 
-    def _calculate_quality(self) -> float:
+    def _ts_quality(self) -> float:
         return _ts_instance.quality([
             tuple(player.rating for player in self.team_1), tuple(player.rating for player in self.team_2)
         ])
 
-    def _get_win_chance(self):
+    def _win_chance(self):
         delta_mu = sum(player.rating.mu for player in self.team_1) - sum(player.rating.mu for player in self.team_2)
         sum_sigma_squared = sum(player.rating.sigma ** 2 for player in (self.team_1 + self.team_2))
         denominator = sqrt(
@@ -62,13 +61,9 @@ class TrueSkillMatchup:
         )
         return _ts_instance.cdf(delta_mu / denominator)
 
-    def _calculate_overweight(self):
-        return sqrt(1 - self.quality) * abs(self.win_chance - 0.5)
-
-    def _get_satisfaction(self) -> float:
-        return (sum([player.winrate - 0.5 for player in self.team_1]) * (1 - 2 * self.win_chance) +
-                sum([player.winrate - 0.5 for player in self.team_2]) * (2 * self.win_chance - 1)
-                ) * (1 - self.quality)
+    def _streakbreaker(self) -> float:
+        return (0.5 - self.win_chance) * (sum([int(p.antistreak) for p in self.team_2]) -
+                                          sum([int(p.antistreak) for p in self.team_1]))
 
 
 class TrueSkillClient:
@@ -93,6 +88,15 @@ class TrueSkillClient:
                 checked.add(TrueSkillClient._signature(team_1))
                 matchups.append(TrueSkillMatchup(team_1, team_2))
         return matchups
+
+    @staticmethod
+    def select_good_matchups(context: Context) -> List[TrueSkillMatchup]:
+        all_options = TrueSkillClient.calculate_matchups(context)
+        most_uncertainty = max([m.uncertainty for m in all_options])
+        selection_threshold = 0.2
+
+        good_options = [m for m in all_options if m.uncertainty >= most_uncertainty - selection_threshold]
+        return sorted(good_options, key=lambda x: (x.streakbreaker, x.uncertainty), reverse=True)
 
     @staticmethod
     def update_players(team_won: List[Player], team_lost: List[Player]):

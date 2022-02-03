@@ -86,7 +86,7 @@ class TestHistorical(InBotTestCase):
                     [TrueSkillPlayer(players[index]) for index in match.lost]
                 )
                 logging.info('Match {}vs{} : Quality {} : Chance {}'.format(
-                    len(match.winners), len(match.lost), r_(matchup.quality), r_(matchup.win_chance)))
+                    len(match.winners), len(match.lost), r_(matchup.uncertainty), r_(matchup.win_chance)))
                 if matchup.win_chance >= 0.5:
                     guessed += 1
                 total += 1
@@ -99,4 +99,4 @@ class TestHistorical(InBotTestCase):
                 logging.info('{} : {}:{}'.format(
                     player.name, r_(player.mu), r_(player.sigma)))
             logging.info('Guessing: {}'.format(r_(guessed / total)))
-            self.assertGreater(guessed / total, 0.65)
+            self.assertGreater(guessed / total, 0.5)
