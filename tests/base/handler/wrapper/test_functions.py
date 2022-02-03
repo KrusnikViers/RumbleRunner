@@ -34,9 +34,11 @@ class TestWrapperFunctions(InBotTestCase):
         callable_fn.assert_called_once()
 
     def test_callback_wrong_user(self):
+        menu_author = self.new_user()
         tg_user = TgUser(333, 'a', False)
+        self.assertNotEqual(tg_user.id, menu_author.tg_id)
         update = Update(000, callback_query=CallbackQuery(
-            'id', from_user=tg_user, chat_instance='chat_instance', data='1:444:',
+            'id', from_user=tg_user, chat_instance='chat_instance', data='1:{}:'.format(menu_author.tg_id),
             message=TgMessage(666, MagicMock(), chat=Chat(888, Chat.PRIVATE), from_user=tg_user)))
         callable_fn = MagicMock()
         WrapperFunctions.callback(callable_fn, ChatType.ALL, self.connection, update, MagicMock())

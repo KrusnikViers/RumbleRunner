@@ -1,5 +1,6 @@
 import functools
 import logging
+from typing import Optional
 
 from telegram import TelegramError
 
@@ -53,3 +54,8 @@ class Actions:
     @_TelegramErrorsCatchScope.return_status
     def delete_message(chat_id: int, message_id: int):
         return BotScope.bot().delete_message(chat_id=chat_id, message_id=message_id)
+
+    @staticmethod
+    @_TelegramErrorsCatchScope.return_status
+    def answer_callback(callback_query_id, text: Optional[str] = None):
+        return BotScope.bot().answer_callback_query(callback_query_id, text=text)

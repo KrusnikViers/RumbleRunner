@@ -6,12 +6,6 @@ from tests.utils import InBotTestCase
 
 
 class TestContext(InBotTestCase):
-    def test_callback_resolving(self):
-        instance = Context.from_update(MagicMock(), MagicMock())
-        with instance:
-            self.bot_mock.answer_callback_query.assert_not_called()
-        self.bot_mock.answer_callback_query.assert_called_once()
-
     def test_shortcuts(self):
         context = Context(message=Message(chat_id=1111, message_id=2222))
         new_markup = MagicMock()

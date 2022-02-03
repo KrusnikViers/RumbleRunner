@@ -10,6 +10,7 @@ from base.handler.default import Memberships, ReportsSender
 from base.handler.helpers import Actions
 from base.handler.wrappers.context import Context
 from base.handler.wrappers.message import CallbackData
+from base.models.helpers import ModelHelpers
 from base.routing import ChatType
 
 
@@ -37,14 +38,15 @@ class _Filter:
 
 class WrapperFunctions:
     @staticmethod
-    def _common_handler_body(handler_fn: Callable[[Context], Optional[str]], database_connection: DatabaseConnection,
+    def _common_handler_body(handler_fn: Callable[[Context], None], database_connection: DatabaseConnection,
                              update: Update, callback_context: CallbackContext):
         with SessionScope(database_connection):
             with Context.from_update(update, callback_context) as context:
                 try:
                     Memberships.update(context)
-                    if (answer := handler_fn(context)) is not None:
-                        context.send_message(answer)
+                    handler_fn(context)
+                    if context.raw_data and context.raw_data.update.callback_query:
+                        Actions.answer_callback(context.raw_data.update.callback_query.id, context.callback_answer)
                 except Exception:
                     ReportsSender.report_exception(update)
 
@@ -67,11 +69,15 @@ class WrapperFunctions:
         is_update_correct = _Filter.is_chat_type_correct(chat_type, update) and \
                             _Filter.sender_and_chat_are_valid(update) and \
                             _Filter.has_enough_data(update, is_callback=True)
+        if not is_update_correct:
+            return
         callback_data = CallbackData.parse(update.callback_query.data)
-        if callback_data.user_id is not None:
-            is_update_correct = is_update_correct and update.effective_user.id == callback_data.user_id
-        if is_update_correct:
+        if callback_data.user_id is None or update.effective_user.id == callback_data.user_id:
             WrapperFunctions._common_handler_body(handler_fn, database_connection, update, callback_context)
+        else:
+            with SessionScope(database_connection):
+                Actions.answer_callback(update.callback_query.id, "Sorry, only {} can interact with this menu".format(
+                    ModelHelpers.get_user_by_tg_id(callback_data.user_id).first_name))
 
     @staticmethod
     def universal(handler_fn: Callable[[Context], Optional[str]], database_connection: DatabaseConnection,
@@ -81,7 +87,7 @@ class WrapperFunctions:
 
     # Special treatment case for pending requests
     @staticmethod
-    def request(handlers_dict: Dict[str, Callable[[Context], Optional[str]]],
+    def request(handlers_dict: Dict[str, Callable[[Context], None]],
                 database_connection: DatabaseConnection,
                 # Up to this point, arguments are predefined by the *Reg function.
                 update: Update, callback_context: CallbackContext):
@@ -97,8 +103,6 @@ class WrapperFunctions:
                     if request_type not in handlers_dict:
                         logging.warning('Missing handler for request type: {}'.format(context.request.type))
                         return
-
-                    if (answer := handlers_dict[request_type](context)) is not None:
-                        context.send_message(answer)
+                    handlers_dict[request_type](context)
                 except Exception:
                     ReportsSender.report_exception(update)

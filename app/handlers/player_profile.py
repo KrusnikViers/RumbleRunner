@@ -4,7 +4,7 @@ from app.api import CallbackId, PendingRequestId
 from app.core import PlayerHelpers, TrueSkillParams
 from app.handlers.players_list import PlayersListHandlers
 from app.models import Player
-from base import SessionScope, Context, InlineMenu, InlineMenuButton, Requests, Actions
+from base import SessionScope, Context, InlineMenuButton, Requests, Actions
 
 
 class PlayerProfileHandlers:
@@ -17,14 +17,14 @@ class PlayerProfileHandlers:
 
     @staticmethod
     def _markup(context: Context, player: Player):
-        return InlineMenu([
+        return [
             [InlineMenuButton('Rename..', CallbackId.PLAYER_PROFILE_RENAMING_START, player.id)],
             [
                 InlineMenuButton('Reset ranking', CallbackId.PLAYER_PROFILE_SCORE_RESET, player.id),
                 InlineMenuButton('Delete forever', CallbackId.PLAYER_PROFILE_DELETE, player.id)
             ],
             [InlineMenuButton('Players list', CallbackId.PLAYERS_LIST_REDRAW)]
-        ])
+        ]
 
     @staticmethod
     def _fetch_player_or_fallback(context: Context) -> Optional[Player]:
@@ -45,7 +45,7 @@ class PlayerProfileHandlers:
     def redraw(context: Context):
         if player := PlayerProfileHandlers._fetch_player_or_fallback(context):
             context.edit_message(PlayerProfileHandlers._title(context, player),
-                                 reply_markup=PlayerProfileHandlers._markup(context, player))
+                                 reply_markup=context.personal_menu(PlayerProfileHandlers._markup(context, player)))
 
     @staticmethod
     def renaming_start(context: Context):

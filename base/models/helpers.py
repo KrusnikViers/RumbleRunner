@@ -3,11 +3,16 @@ from typing import Optional
 from telegram import User as TgUser, Chat as TgChat
 
 from base.database import DBHelpers
+from base.database import SessionScope
 from base.models.telegram_group import TelegramGroup
 from base.models.telegram_user import TelegramUser
 
 
 class ModelHelpers:
+    @staticmethod
+    def get_user_by_tg_id(tg_id: int) -> Optional[TelegramUser]:
+        return SessionScope.session().query(TelegramUser).filter(TelegramUser.tg_id == tg_id).one_or_none()
+
     @staticmethod
     def get_from_tg_user(tg_user: TgUser) -> Optional[TelegramUser]:
         if tg_user.is_bot:

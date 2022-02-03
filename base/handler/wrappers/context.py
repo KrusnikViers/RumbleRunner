@@ -9,7 +9,6 @@ from telegram.ext import CallbackContext
 from base.database import SessionScope
 from base.handler.helpers.actions import Actions
 from base.handler.helpers.inline_menu import InlineMenu, InlineMenuButton
-from base.handler.wrappers.bot_scope import BotScope
 from base.handler.wrappers.message import Message
 from base.models import TelegramUser, TelegramGroup, TelegramUserRequest
 from base.models.helpers import ModelHelpers
@@ -29,6 +28,9 @@ class Context:
         self.group: Optional[TelegramGroup] = group
         self.request: Optional[TelegramUserRequest] = request
 
+        # Can be filled by handler
+        self.callback_answer: Optional[str] = None
+
     @classmethod
     def from_update(cls, update: Update, callback_context: CallbackContext):
         sender = Context._get_sender(update)
@@ -39,6 +41,9 @@ class Context:
                    sender=sender, group=group, request=request)
 
     # Shortcuts
+    def send_callback_answer(self, text: str):
+        self.callback_answer = text
+
     def personal_menu(self, markup: List[List[InlineMenuButton]]) -> InlineMenu:
         return InlineMenu(markup, user_tg_id=self.sender.tg_id)
 
@@ -60,8 +65,7 @@ class Context:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.raw_data and self.raw_data.update.callback_query:
-            BotScope.bot().answer_callback_query(self.raw_data.update.callback_query.id)
+        pass
 
     @staticmethod
     def _get_sender(update: Update) -> Optional[TelegramUser]:
