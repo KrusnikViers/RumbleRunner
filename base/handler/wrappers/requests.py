@@ -1,12 +1,25 @@
 from typing import Optional
 
+from sqlalchemy import and_
+
 from app import PendingRequestId
 from base.database import SessionScope
+from base.database.helpers import DBHelpers
 from base.handler.wrappers.context import Context
-from base.models import TelegramUserRequest
+from base.models import TelegramUserRequest, TelegramUser, TelegramGroup
 
 
 class Requests:
+    @staticmethod
+    def get_from_raw_data(user_tg_id: int, group_tg_id: Optional[int]) -> Optional[TelegramUserRequest]:
+        if not (user := DBHelpers.select_by_tg_id(TelegramUser, user_tg_id)):
+            return None
+        group = DBHelpers.select_by_tg_id(TelegramGroup, group_tg_id)
+        group_id = group.id if group else None
+        return SessionScope.session().query(TelegramUserRequest).filter(and_(
+            TelegramUserRequest.telegram_user_id == user.id,
+            TelegramUserRequest.telegram_group_id == group_id)).one_or_none()
+
     @staticmethod
     def create(context: Context, request_type: PendingRequestId, original_message_id=None,
                additional_data: Optional[str] = None) -> bool:

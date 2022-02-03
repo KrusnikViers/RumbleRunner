@@ -19,3 +19,7 @@ class DBHelpers:
         if changed:
             session.commit()
         return instance
+
+    @staticmethod
+    def select_by_tg_id(model, tg_id: int):
+        return SessionScope.session().query(model).filter(model.tg_id == tg_id).one_or_none()

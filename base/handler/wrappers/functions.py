@@ -6,11 +6,13 @@ from telegram.ext import CallbackContext
 
 from app import value_to_enum, PendingRequestId
 from base.database import DatabaseConnection, SessionScope
+from base.database.helpers import DBHelpers
 from base.handler.default import Memberships, ReportsSender
 from base.handler.helpers import Actions
 from base.handler.wrappers.context import Context
 from base.handler.wrappers.message import CallbackData
-from base.models.helpers import ModelHelpers
+from base.handler.wrappers.requests import Requests
+from base.models import TelegramUser
 from base.routing import ChatType
 
 
@@ -71,13 +73,14 @@ class WrapperFunctions:
                             _Filter.has_enough_data(update, is_callback=True)
         if not is_update_correct:
             return
+
         callback_data = CallbackData.parse(update.callback_query.data)
         if callback_data.user_id is None or update.effective_user.id == callback_data.user_id:
             WrapperFunctions._common_handler_body(handler_fn, database_connection, update, callback_context)
         else:
             with SessionScope(database_connection):
                 Actions.answer_callback(update.callback_query.id, "Sorry, only {} can interact with this menu".format(
-                    ModelHelpers.get_user_by_tg_id(callback_data.user_id).first_name))
+                    DBHelpers.select_by_tg_id(TelegramUser, callback_data.user_id).first_name))
 
     @staticmethod
     def universal(handler_fn: Callable[[Context], Optional[str]], database_connection: DatabaseConnection,
@@ -85,24 +88,23 @@ class WrapperFunctions:
                   update: Update, callback_context: CallbackContext):
         WrapperFunctions._common_handler_body(handler_fn, database_connection, update, callback_context)
 
-    # Special treatment case for pending requests
     @staticmethod
     def request(handlers_dict: Dict[str, Callable[[Context], None]],
                 database_connection: DatabaseConnection,
                 # Up to this point, arguments are predefined by the *Reg function.
                 update: Update, callback_context: CallbackContext):
-        with SessionScope(database_connection):
-            with Context.from_update(update, callback_context) as context:
-                try:
-                    Memberships.update(context)
+        is_update_correct = _Filter.sender_and_chat_are_valid(update) and \
+                            _Filter.has_enough_data(update, is_callback=False)
+        if not is_update_correct:
+            return
 
-                    if context.request is None:
-                        return
-                    if (request_type := value_to_enum(PendingRequestId, context.request.type)) is None:
-                        return
-                    if request_type not in handlers_dict:
-                        logging.warning('Missing handler for request type: {}'.format(context.request.type))
-                        return
-                    handlers_dict[request_type](context)
-                except Exception:
-                    ReportsSender.report_exception(update)
+        with SessionScope(database_connection):
+            if not (request := Requests.get_from_raw_data(update.effective_user.id, update.effective_chat.id)):
+                return
+            if (request_type := value_to_enum(PendingRequestId, request.type)) is None:
+                return
+            if request_type not in handlers_dict:
+                logging.warning('Missing handler for request type: {}'.format(request_type))
+                return
+        WrapperFunctions._common_handler_body(handlers_dict[request_type], database_connection,
+                                              update, callback_context)
