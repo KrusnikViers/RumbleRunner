@@ -20,3 +20,9 @@ class TestRequests(InBotTestCase):
     def test_request_missing(self):
         with Context(message=Message(message_id=111), sender=self.new_user()) as context:
             self.assertFalse(Requests.delete(context))
+
+    def test_request_for_missing_user(self):
+        another_user = self.new_user()
+        non_existing_user_id = 999
+        self.assertNotEqual(another_user.tg_id, non_existing_user_id)
+        self.assertIsNone(Requests.get_from_raw_data(non_existing_user_id, 111))

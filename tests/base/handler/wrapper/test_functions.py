@@ -50,6 +50,13 @@ class TestWrapperFunctions(InBotTestCase):
         WrapperFunctions.command(callable_fn, ChatType.GROUP, self.connection, update, MagicMock())
         callable_fn.assert_not_called()
 
+    def test_callback_bad_sender(self):
+        update = Update(000,
+                        message=TgMessage(111, None, Chat(222, Chat.PRIVATE), from_user=TgUser(333, 'a', is_bot=True)))
+        callable_fn = MagicMock()
+        WrapperFunctions.callback(callable_fn, ChatType.ALL, self.connection, update, MagicMock())
+        callable_fn.assert_not_called()
+
 
 class TestRequestsDispatching(InBotTestCase):
     def test_no_sender(self):

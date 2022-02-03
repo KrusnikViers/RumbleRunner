@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock
 
 from app.api import CallbackId
-from base import Context, Message, InlineMenuButton
+from base import Message, InlineMenuButton
+from base.handler.wrappers.context import Context
 from tests.utils import InBotTestCase
 
 

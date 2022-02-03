@@ -11,7 +11,7 @@ from base.models import TelegramUserRequest, TelegramUser, TelegramGroup
 
 class Requests:
     @staticmethod
-    def get_from_raw_data(user_tg_id: int, group_tg_id: Optional[int]) -> Optional[TelegramUserRequest]:
+    def get_from_raw_data(user_tg_id: int, group_tg_id: int) -> Optional[TelegramUserRequest]:
         if not (user := DBHelpers.select_by_tg_id(TelegramUser, user_tg_id)):
             return None
         group = DBHelpers.select_by_tg_id(TelegramGroup, group_tg_id)

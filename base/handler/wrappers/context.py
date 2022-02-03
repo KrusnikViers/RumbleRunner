@@ -41,9 +41,6 @@ class Context:
                    sender=sender, group=group, request=request)
 
     # Shortcuts
-    def send_callback_answer(self, text: str):
-        self.callback_answer = text
-
     def personal_menu(self, markup: List[List[InlineMenuButton]]) -> InlineMenu:
         return InlineMenu(markup, user_tg_id=self.sender.tg_id)
 
