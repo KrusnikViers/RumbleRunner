@@ -70,8 +70,8 @@ class MatchupSelectionHandlers:
         for index, matchup in enumerate(matchups):
             matchup_descriptions.append(
                 ("Option {} {}\n"
-                 "{}\n"
-                 "{}"
+                 "Team 1 (left): {}\n"
+                 "Team 2 (right): {}"
                  ).format(str(index + 1),
                           MatchupSelectionHandlers._matchup_marks(matchup),
                           ", ".join([players_map[player.id].name for player in matchup.team_1]),
